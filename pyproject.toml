@@ -1,0 +1,48 @@
+[project]
+name = "codebase-copilot"
+version = "0.4.0"
+description = "A versioned codebase assistant with measurable quality and operations."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "fastembed>=0.7,<1",
+    "httpx[socks]>=0.28,<1",
+    "openinference-semantic-conventions>=0.1,<1",
+    "opentelemetry-exporter-otlp-proto-http>=1.45,<2",
+    "opentelemetry-sdk>=1.45,<2",
+    "pydantic>=2.10,<3",
+    "qdrant-client>=1.15,<2",
+    "tree-sitter>=0.25,<0.26",
+    "tree-sitter-cpp>=0.23,<0.24",
+    "tree-sitter-go>=0.25,<0.26",
+    "uvicorn>=0.34,<1",
+]
+
+[dependency-groups]
+dev = [
+    "httpx2>=2.13.1,<3",
+    "mypy>=1.15,<2",
+    "pytest>=8.3,<10",
+    "ruff>=0.11,<1",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --strict-markers"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["app", "ingestion", "indexing", "observability", "evals", "tests", "scripts"]
+plugins = ["pydantic.mypy"]

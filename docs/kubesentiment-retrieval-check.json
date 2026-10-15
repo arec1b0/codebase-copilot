@@ -1,0 +1,1134 @@
+{
+  "checked_at": "2026-10-15T06:09:11.649859+00:00",
+  "scope": "Real CPU embeddings and Qdrant SDK local mode. No Ollama, judge, Docker server, or Phoenix measurement.",
+  "python": "3.12.14",
+  "platform": "Linux",
+  "dataset_sha256": "e37fad215160bab13414d459f60063e00cfe9eb8d5f7cf70a5ce5b19c1d25f59",
+  "profile_sha256": "fb59d00743ca37228e008870498bb1a9bbaddef103225048b63ce8d9e425250f",
+  "index": {
+    "schema_version": 1,
+    "algorithm": "dense-bm25-v1",
+    "repo": "kubesentiment",
+    "commit_sha": "1aa3ebfd3f0467ea61142dff72d6534aa6968e20",
+    "corpus_version": "6bd4ec339139a3e77cc19dd977c82a08f34950340f977a1ecb8b368fe75b970e",
+    "corpus_sha256": "a5fbe73f83baa950423c2a79a709d2f7ed1934c96d543ae8e4ab7b36baa39ef4",
+    "chunk_count": 6801,
+    "embeddings": {
+      "dense_assets": {
+        "config.json": "13582bcf2effc85b7bf3d3f5532e686bc1c9ce86bb009d10f0ec33cbe92299dd",
+        "model_optimized.onnx": "51f1bd0addd6e859e42c2c8021a5e5461385bb676a649f4b269aa445449f2431",
+        "special_tokens_map.json": "5d5b662e421ea9fac075174bb0688ee0d9431699900b90662acd44b2a350503a",
+        "tokenizer.json": "d241a60d5e8f04cc1b2b3e9ef7a4921b27bf526d9f6050ab90f9267a1f9e5c66",
+        "tokenizer_config.json": "0b29c7bfc889e53b36d9dd3e686dd4300f6525110eaa98c76a5dafceb2029f53"
+      },
+      "dense_dimension": 384,
+      "dense_model": "BAAI/bge-small-en-v1.5",
+      "max_input_tokens": 512,
+      "packages": {
+        "fastembed": "0.9.0",
+        "mmh3": "5.3.1",
+        "numpy": "2.5.4",
+        "onnxruntime": "1.31.0",
+        "py-rust-stemmers": "0.1.8",
+        "tokenizers": "0.23.3"
+      },
+      "provider": "CPUExecutionProvider",
+      "sparse_assets": {
+        "arabic.txt": "0df01c0a184d8c15077c6f0ee70e25e0c0308d827b92b14a19f5f819a0c465d0",
+        "config.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "danish.txt": "1bedc9cf5a8830dacf8c4ee0d8b301f0801861756ad0d504431d01047f961b0c",
+        "dutch.txt": "e5a2a7c390fe3ad0c0a132586ed11492b635d66a1f426cd89677f80b07bc76a6",
+        "english.txt": "019f104ba2ed07436d05f9cdd3383034ad66014edc27fc651f837e1a038b6451",
+        "finnish.txt": "952af766edc9b8e7ddc877fc464cbd94b91754b5621fdfdd7020568fd4813fcd",
+        "french.txt": "58ac7f7c074b70dc0fc86f6fcf40b2c227e9f95627e90e57971d5cce1e30e2e9",
+        "german.txt": "f0c25acd7ec02a31f6679d9664ec5222ca846fdbc58db96160f4e7c0ddb0f7ea",
+        "greek.txt": "7a97c6dc81144f7e8fcfe976025954ca3731f78a75d1fd86aa87f261fd195dae",
+        "hungarian.txt": "64a68b5ebaa616b25bd976ac915c326f2ea8cce8b59a0ac8c5728b980ae4fb0c",
+        "italian.txt": "293d7841f198e4012f49e8e5653c3bfd073a58cea1259fa2c0fcec894167b628",
+        "norwegian.txt": "f7e5b42208ccf1b1f282f9e0f8570e464272762bda5718b6b26750f510a688dc",
+        "portuguese.txt": "6e7b98378c6b728266a83ebf035d927abf16b9e0d815d6204d81d90d896bcc9b",
+        "romanian.txt": "0ab53d21cbde00c6bf367706a0243c646140ba564cce7e83ac33d80f8923e957",
+        "russian.txt": "1743191192b4a4f77fcc216499455dc00c1b8626fdd407076a8deefff80e3d59",
+        "spanish.txt": "6125eadf28ba664a60bf4296147bcbd40b80be93670056fdb229960ac15e2310",
+        "swedish.txt": "2a9d9d756bc4257d49329994f805c712cd5ab6746162e2082752238766c1c0c8",
+        "turkish.txt": "f2c7f0c2bd3dba42da700776266831853a3b5f1207fada5c15207334109abb57"
+      },
+      "sparse_model": "Qdrant/bm25",
+      "sparse_parameters": {
+        "avg_len": 256.0,
+        "b": 0.75,
+        "disable_stemmer": false,
+        "k": 1.2,
+        "language": "english",
+        "token_max_length": 40
+      },
+      "threads": 2
+    },
+    "dimension": 384,
+    "document_format": "source-header-v1",
+    "distance": "Cosine",
+    "sparse_modifier": "idf",
+    "index_version": "9113ab132e8000f410a8d463187aef2553d2273aba1641905ead10d485c53092",
+    "collection": "copilot_kubesentiment_9113ab132e8000f410a8d463"
+  },
+  "max_document_tokens": 414,
+  "summary": {
+    "hit_rate_at_3": 0.8333333333333334,
+    "range_recall_at_3": 0.7805555555555556,
+    "mrr_at_3": 0.6833333333333333,
+    "cases": 30,
+    "indexed_points": 6801
+  },
+  "results": [
+    {
+      "case_id": "locating-01",
+      "category": "locating",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "17ef5e10-4f65-5707-a640-c17af4303b76",
+          "path": "app/services/prediction.py",
+          "symbol": "PredictionService.predict",
+          "start_line": 69,
+          "end_line": 80,
+          "content_sha256": "268acb00f7d1ed5e813288385ce42e27d21caee86df9f5313360e312a98ad824"
+        },
+        {
+          "chunk_id": "6c267eb6-18c7-52de-ada4-af48e5212ff7",
+          "path": "tests/unit/test_dependency_injection.py",
+          "symbol": "TestPredictionService.test_predict_empty_text_raises_error",
+          "start_line": 74,
+          "end_line": 85,
+          "content_sha256": "03b9f8efa62e900c3e5c0de03d1b8a823ffd47e7810059f457891e93affd5eff"
+        },
+        {
+          "chunk_id": "5983cbf0-71a0-5315-a372-39b4461f567a",
+          "path": "app/services/prediction.py",
+          "symbol": "PredictionService.predict_batch",
+          "start_line": 117,
+          "end_line": 122,
+          "content_sha256": "5c9eeada87be3a12eb9e43dae9b6bb15580047f29384625785266b611df61f2f"
+        }
+      ]
+    },
+    {
+      "case_id": "locating-02",
+      "category": "locating",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 0.3333333333333333
+      },
+      "hits": [
+        {
+          "chunk_id": "644e3e74-252c-54cd-8b06-34c3c862007d",
+          "path": "tests/unit/test_middleware.py",
+          "symbol": "test_middleware_rejects_bad_key_and_accepts_good_key",
+          "start_line": 54,
+          "end_line": 70,
+          "content_sha256": "cdbda0d6f166457e0ff40d514f650daa1e1d32e24e2536a00445d6f7eae9fd2a"
+        },
+        {
+          "chunk_id": "6dff6a41-8ef9-5ffb-81bf-514318375628",
+          "path": "app/api/middleware/auth.py",
+          "symbol": "APIKeyAuthMiddleware.dispatch",
+          "start_line": 51,
+          "end_line": 64,
+          "content_sha256": "0f7e9c1f5cef6adaec7c115ba33516c2d8d232b1944e87bf0bcdabd77ef54602"
+        },
+        {
+          "chunk_id": "f2107fb6-2e4e-5c1d-8225-236152d47c2b",
+          "path": "app/api/middleware/auth.py",
+          "symbol": "APIKeyAuthMiddleware.dispatch",
+          "start_line": 79,
+          "end_line": 91,
+          "content_sha256": "fca2f683ddbba2fa02186b425276fa2a2c99fccf0c7fe1bc7dfc40a39e4f5c5a"
+        }
+      ]
+    },
+    {
+      "case_id": "locating-03",
+      "category": "locating",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 0.5
+      },
+      "hits": [
+        {
+          "chunk_id": "4e03d957-8a84-504c-9c03-b66e3da1e9b7",
+          "path": "app/core/config/redis.py",
+          "symbol": "RedisConfig",
+          "start_line": 21,
+          "end_line": 40,
+          "content_sha256": "34bcd83d82cf82c2d666dad4df15162bcee986c105296fb5ce2f34fba82f3e26"
+        },
+        {
+          "chunk_id": "3735ff3b-f662-5509-ad10-caa5994c5dea",
+          "path": "app/services/redis_cache.py",
+          "symbol": "RedisCacheClient._make_key",
+          "start_line": 61,
+          "end_line": 71,
+          "content_sha256": "3e54df2ca2112ad2f2f1dbb9854a4137aed7f5ac77c914a4c2a05869cce487cc"
+        },
+        {
+          "chunk_id": "17c5c055-f05d-52d9-b279-799befa2d51b",
+          "path": "app/core/config/redis.py",
+          "symbol": "RedisConfig",
+          "start_line": 61,
+          "end_line": 82,
+          "content_sha256": "bfc223416333fabbf0e18ee615fceb88cd7d08eeeb0ef5156555d7ae763100f3"
+        }
+      ]
+    },
+    {
+      "case_id": "locating-04",
+      "category": "locating",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "ff88c7f4-5ede-54bc-904e-87acd15fc540",
+          "path": "app/services/drift_detection.py",
+          "symbol": "DriftDetector.check_drift",
+          "start_line": 311,
+          "end_line": 323,
+          "content_sha256": "6bc2ca7ddee0ed29ee51656611a16413081f60b7cf8e68512b5ccc4df33a9f32"
+        },
+        {
+          "chunk_id": "d23a654d-6060-51a5-940f-1b33a53e1cdb",
+          "path": "app/services/drift_detection.py",
+          "symbol": "DriftDetector.calculate_psi",
+          "start_line": 158,
+          "end_line": 174,
+          "content_sha256": "04bf77d299f361d92925e2737fa48cd66fb98c9cf7e4b8b71ffc372bd1ffed6c"
+        },
+        {
+          "chunk_id": "e345218f-4832-54a0-bde9-3eb99715d7f8",
+          "path": "app/services/drift_detection.py",
+          "symbol": "DriftDetector.get_drift_summary",
+          "start_line": 406,
+          "end_line": 409,
+          "content_sha256": "9f71f78df64a44871092f1c11f5ba8c682e9fd05adb314dcc13f8889913c8a76"
+        }
+      ]
+    },
+    {
+      "case_id": "locating-05",
+      "category": "locating",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 0.3333333333333333
+      },
+      "hits": [
+        {
+          "chunk_id": "1ef01a2a-ffb0-52de-a735-c90654e036ef",
+          "path": "app/models/factory.py",
+          "symbol": "ModelFactory.reset_models",
+          "start_line": 158,
+          "end_line": 162,
+          "content_sha256": "f18af8d82fd34021cbf973826f34c6954328f408c3f1f895626f728791a3b051"
+        },
+        {
+          "chunk_id": "ddaeb533-b7b4-546e-821e-6b300cf269c6",
+          "path": "app/models/factory.py",
+          "symbol": "ModelFactory.create_model",
+          "start_line": 42,
+          "end_line": 58,
+          "content_sha256": "22294addedfc5a611e41e243c422bb1737b01a2828d71c9bd6dac86d5c98fd39"
+        },
+        {
+          "chunk_id": "73b7e3ab-fb74-5e91-a9fb-483d76799e0f",
+          "path": "app/models/factory.py",
+          "symbol": "ModelFactory.create_model",
+          "start_line": 59,
+          "end_line": 73,
+          "content_sha256": "93968db7e2dc97e3446e97633e22a8de5476675ed0dce912cae36d76a44efe24"
+        }
+      ]
+    },
+    {
+      "case_id": "locating-06",
+      "category": "locating",
+      "metrics": {
+        "hit": 0.0,
+        "recall": 0.0,
+        "reciprocal_rank": 0.0
+      },
+      "hits": [
+        {
+          "chunk_id": "22b6a1a5-9c59-5ae8-a49f-683c43395ad9",
+          "path": "tests/unit/test_request_schemas.py",
+          "symbol": "TestTextInputValidation.test_text_with_leading_trailing_whitespace_is_stripped",
+          "start_line": 46,
+          "end_line": 50,
+          "content_sha256": "7235f8c80578b04a4dddcce9db3fa52e8db81a1734b8d04ed0c75178eb3ad4be"
+        },
+        {
+          "chunk_id": "6a30ad22-c7c4-5b2b-8239-65f35ebc887a",
+          "path": "tests/unit/test_input_validation.py",
+          "symbol": "TestTextInputValidation.test_text_gets_stripped",
+          "start_line": 88,
+          "end_line": 93,
+          "content_sha256": "95557a20b9436c8ecf2b88287d7a1350391803ac9586a9953508414e83b521f3"
+        },
+        {
+          "chunk_id": "54cd284a-f5c9-5730-8992-75d435c6de03",
+          "path": "app/api/schemas/requests.py",
+          "symbol": "TextInput.validate_text",
+          "start_line": 49,
+          "end_line": 66,
+          "content_sha256": "d5c53724f7e6f5412cd883e27dce16bc98e011b167af28e137c472cd48c6952d"
+        }
+      ]
+    },
+    {
+      "case_id": "explanation-01",
+      "category": "explanation",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "fa2c2f17-6442-5fa7-ba07-f880b4df411f",
+          "path": "app/services/prediction.py",
+          "symbol": "PredictionService.predict",
+          "start_line": 81,
+          "end_line": 87,
+          "content_sha256": "1d5093a20264ed250672a1856512501ff8f64b3bc956c742c146356671c76beb"
+        },
+        {
+          "chunk_id": "1dcd4f2d-5f9d-5656-94c6-6185beb70a0a",
+          "path": "app/core/dependencies.py",
+          "symbol": "get_prediction_service",
+          "start_line": 107,
+          "end_line": 118,
+          "content_sha256": "9e47ffb444c6f9ce97aea5b7c18c9db8e1b9a100485015052c3d018ffb0c1736"
+        },
+        {
+          "chunk_id": "766a5594-146a-535a-8f92-be3a756d4005",
+          "path": "app/services/prediction.py",
+          "symbol": "PredictionService.predict",
+          "start_line": 56,
+          "end_line": 68,
+          "content_sha256": "98eb060a87157325e88d32e4a96ad4a32bd1d70193f99e77a32b835fc98992a5"
+        }
+      ]
+    },
+    {
+      "case_id": "explanation-02",
+      "category": "explanation",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "5983cbf0-71a0-5315-a372-39b4461f567a",
+          "path": "app/services/prediction.py",
+          "symbol": "PredictionService.predict_batch",
+          "start_line": 117,
+          "end_line": 122,
+          "content_sha256": "5c9eeada87be3a12eb9e43dae9b6bb15580047f29384625785266b611df61f2f"
+        },
+        {
+          "chunk_id": "a9fc1718-b4ee-585c-8f4b-2a863e141ca5",
+          "path": "app/services/prediction.py",
+          "symbol": "PredictionService.predict_batch",
+          "start_line": 103,
+          "end_line": 116,
+          "content_sha256": "36c9d88731f9c65af990e91a186eb7b3e79184f182a4dbcf6b232560872cf9f4"
+        },
+        {
+          "chunk_id": "2b83e6cd-4fa5-5257-acec-5b12976e5bc3",
+          "path": "app/models/pytorch_sentiment.py",
+          "symbol": "SentimentAnalyzer.predict_batch",
+          "start_line": 288,
+          "end_line": 301,
+          "content_sha256": "a18193cb36c45d636888e969cf0aa2d718956165901403b712a2b43a025d501f"
+        }
+      ]
+    },
+    {
+      "case_id": "explanation-03",
+      "category": "explanation",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "e87c6221-fc2c-54a8-9782-7e92f29ea498",
+          "path": "app/services/redis_cache.py",
+          "symbol": "RedisCacheClient.set",
+          "start_line": 124,
+          "end_line": 130,
+          "content_sha256": "2141fa387a621f39118a3d5c6a996dac9cb8a21b90023718a4b1313dfc6e2df2"
+        },
+        {
+          "chunk_id": "de5f3bbf-d8df-5afa-b995-36b9ca92eec2",
+          "path": "app/services/redis_cache.py",
+          "symbol": "RedisCacheClient.set",
+          "start_line": 107,
+          "end_line": 123,
+          "content_sha256": "0fb8cb610584f9ae38485609f842954963cfca5aea112970c69cb9b79329da32"
+        },
+        {
+          "chunk_id": "b8769c2a-ad68-58b5-9ef7-ef541927e11d",
+          "path": "app/services/redis_cache.py",
+          "symbol": "RedisCacheClient.__init__",
+          "start_line": 41,
+          "end_line": 50,
+          "content_sha256": "c4347b3844023dbc851766f175e8b97e40e0f5a644baf7883fc350beda2e42fd"
+        }
+      ]
+    },
+    {
+      "case_id": "explanation-04",
+      "category": "explanation",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "75592ffc-d547-5a72-af8b-b52a2b2659cb",
+          "path": "app/services/shadow_mode.py",
+          "symbol": "ShadowModeService.should_shadow",
+          "start_line": 153,
+          "end_line": 164,
+          "content_sha256": "ccab0e833eb6d6741035cbe69a4ff236f039eed30c4d3610be1192f17896f1ae"
+        },
+        {
+          "chunk_id": "48ea069a-d980-58d2-ba93-ce5cbbbc6998",
+          "path": "app/api/routes/predictions.py",
+          "symbol": "predict_sentiment",
+          "start_line": 111,
+          "end_line": 122,
+          "content_sha256": "0a4b167d82abe66b9e5d1bc6e03f493434981cd181f2ff4673100a87062e3e05"
+        },
+        {
+          "chunk_id": "fbdedb28-0554-5429-9487-8717e79fd999",
+          "path": "app/services/shadow_mode.py",
+          "symbol": "ShadowModeService._log_comparison",
+          "start_line": 265,
+          "end_line": 277,
+          "content_sha256": "0b49169e0e8484e2cb5b5570e1853ada9d355bbf97f331529be59a6f4b19913d"
+        }
+      ]
+    },
+    {
+      "case_id": "explanation-05",
+      "category": "explanation",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "1615d5e5-3342-56d7-82bb-ca101cb3e86a",
+          "path": "app/services/drift_detection.py",
+          "symbol": "DriftDetector.add_prediction",
+          "start_line": 143,
+          "end_line": 154,
+          "content_sha256": "1648751d80abe1650848991e99d207d0de753d0eed16f8b1bc56e748cd5831e9"
+        },
+        {
+          "chunk_id": "a72ba728-b0d8-5875-a643-dbd354d0cc04",
+          "path": "app/interfaces/drift_interface.py",
+          "symbol": "IDriftDetector.add_prediction",
+          "start_line": 31,
+          "end_line": 51,
+          "content_sha256": "91755d3e1b17ca038ad207f46521cda6b4995e1537e7eddac802e739f637a63f"
+        },
+        {
+          "chunk_id": "bb4277c0-dfb7-54cf-9664-ce3de65d6114",
+          "path": "app/services/drift_detection.py",
+          "symbol": "DriftDetector.add_prediction",
+          "start_line": 124,
+          "end_line": 142,
+          "content_sha256": "2e3709003164f067da62010f80a71f155326d9a63bfae3b17d11beb0f5eef9bb"
+        }
+      ]
+    },
+    {
+      "case_id": "explanation-06",
+      "category": "explanation",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 0.3333333333333333
+      },
+      "hits": [
+        {
+          "chunk_id": "b2953b63-4484-5a06-9d84-15c97ddc3982",
+          "path": "app/models/factory.py",
+          "symbol": "ModelFactory.create_model",
+          "start_line": 30,
+          "end_line": 41,
+          "content_sha256": "06db6364394bb11c12c7d262420785178c0e1e29bfc4f1b4e7415284b0b407bf"
+        },
+        {
+          "chunk_id": "600513d4-f0f3-509e-b957-fe926b501802",
+          "path": "app/core/config/settings.py",
+          "symbol": "Settings.onnx_model_path",
+          "start_line": 199,
+          "end_line": 201,
+          "content_sha256": "8105598db1f3ed0948f7af850b140df12bf2e63c3546d948ac75b7e9a5d5e673"
+        },
+        {
+          "chunk_id": "aac2515a-e03c-515f-b941-327e8991fbad",
+          "path": "app/models/factory.py",
+          "symbol": "ModelFactory.create_model",
+          "start_line": 74,
+          "end_line": 85,
+          "content_sha256": "a0fe744f52393604c3873ec71452205de0d0684f1c339788af5fc642c839fa05"
+        }
+      ]
+    },
+    {
+      "case_id": "dependency-01",
+      "category": "dependency",
+      "metrics": {
+        "hit": 0.0,
+        "recall": 0.0,
+        "reciprocal_rank": 0.0
+      },
+      "hits": [
+        {
+          "chunk_id": "139e6977-0fdd-5572-87f9-e00ebd3407af",
+          "path": "app/core/dependencies.py",
+          "symbol": "get_prediction_service",
+          "start_line": 94,
+          "end_line": 106,
+          "content_sha256": "ee1e752605644a78666274bbdbe8a408d07aaf811fd23088aa8aa91fef0e3431"
+        },
+        {
+          "chunk_id": "04d49d7f-56ea-5f28-9bd4-fc61fa8613ac",
+          "path": "tests/unit/test_dependency_injection.py",
+          "symbol": "TestPredictionService.test_prediction_service_initialization",
+          "start_line": 41,
+          "end_line": 50,
+          "content_sha256": "7947fc676dab38433e3cdf76852e890ae48708922ed684125b8a3db98ead0b50"
+        },
+        {
+          "chunk_id": "83e93d73-c3ba-5af4-8579-85388492c988",
+          "path": "app/api/routes/async_batch.py",
+          "symbol": "get_async_batch_service",
+          "start_line": 37,
+          "end_line": 49,
+          "content_sha256": "2a1839234ea495ffeba9ed7fbf95dde68e9af600e04b748ddc04a08a41e9bcb0"
+        }
+      ]
+    },
+    {
+      "case_id": "dependency-02",
+      "category": "dependency",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "17ef5e10-4f65-5707-a640-c17af4303b76",
+          "path": "app/services/prediction.py",
+          "symbol": "PredictionService.predict",
+          "start_line": 69,
+          "end_line": 80,
+          "content_sha256": "268acb00f7d1ed5e813288385ce42e27d21caee86df9f5313360e312a98ad824"
+        },
+        {
+          "chunk_id": "9a1034ee-9118-51ab-80ce-d45b99f83aa0",
+          "path": "tests/unit/test_input_validation.py",
+          "symbol": "TestPredictionServiceValidation.test_text_too_long_raises_error_in_service",
+          "start_line": 342,
+          "end_line": 353,
+          "content_sha256": "6c4ad0b9c25e55e1d9d7525c7b800844ccbad7410415468dd7e76c5ce46d5ef6"
+        },
+        {
+          "chunk_id": "26340f6d-2237-507e-812f-a7d3a8f65f17",
+          "path": "app/core/config/model.py",
+          "symbol": "ModelConfig",
+          "start_line": 52,
+          "end_line": 69,
+          "content_sha256": "fc2aa3d48749466365baf9beb8b5f72028354538b900cbc7e961ce733d27cc09"
+        }
+      ]
+    },
+    {
+      "case_id": "dependency-03",
+      "category": "dependency",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 0.5
+      },
+      "hits": [
+        {
+          "chunk_id": "5a71f95e-835e-58c3-bf72-eb2db5765a58",
+          "path": "app/services/drift_detection.py",
+          "symbol": "DriftDetector.chi_squared_test",
+          "start_line": 223,
+          "end_line": 240,
+          "content_sha256": "8f728a8381e76cb9471a8473f04293b2f291055daea51a5546777bbc6b4d0cba"
+        },
+        {
+          "chunk_id": "c01400c2-3616-50c7-829f-a8054390ee17",
+          "path": "app/services/drift_detection.py",
+          "symbol": "DriftDetector.check_drift",
+          "start_line": 284,
+          "end_line": 297,
+          "content_sha256": "4f238670e39aea4ffc9085f9d312d7995cfad2a9583f7453d9c860659dd5a54f"
+        },
+        {
+          "chunk_id": "fcef5b22-dce4-5f3f-9e7d-f2676e9de2d6",
+          "path": "app/services/drift_detection.py",
+          "symbol": "DriftDetector.chi_squared_test",
+          "start_line": 241,
+          "end_line": 250,
+          "content_sha256": "f404b319f8a3617456e249026cb69b4a36cb72c74dee43e9ac7bd7ac688242a1"
+        }
+      ]
+    },
+    {
+      "case_id": "dependency-04",
+      "category": "dependency",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 0.5
+      },
+      "hits": [
+        {
+          "chunk_id": "4e03d957-8a84-504c-9c03-b66e3da1e9b7",
+          "path": "app/core/config/redis.py",
+          "symbol": "RedisConfig",
+          "start_line": 21,
+          "end_line": 40,
+          "content_sha256": "34bcd83d82cf82c2d666dad4df15162bcee986c105296fb5ce2f34fba82f3e26"
+        },
+        {
+          "chunk_id": "b8769c2a-ad68-58b5-9ef7-ef541927e11d",
+          "path": "app/services/redis_cache.py",
+          "symbol": "RedisCacheClient.__init__",
+          "start_line": 41,
+          "end_line": 50,
+          "content_sha256": "c4347b3844023dbc851766f175e8b97e40e0f5a644baf7883fc350beda2e42fd"
+        },
+        {
+          "chunk_id": "3735ff3b-f662-5509-ad10-caa5994c5dea",
+          "path": "app/services/redis_cache.py",
+          "symbol": "RedisCacheClient._make_key",
+          "start_line": 61,
+          "end_line": 71,
+          "content_sha256": "3e54df2ca2112ad2f2f1dbb9854a4137aed7f5ac77c914a4c2a05869cce487cc"
+        }
+      ]
+    },
+    {
+      "case_id": "dependency-05",
+      "category": "dependency",
+      "metrics": {
+        "hit": 0.0,
+        "recall": 0.0,
+        "reciprocal_rank": 0.0
+      },
+      "hits": [
+        {
+          "chunk_id": "c7d28faa-41ef-5d3a-bf9b-61a1efaafe90",
+          "path": "app/services/shadow_mode.py",
+          "symbol": "ShadowModeService.dispatch_shadow_prediction",
+          "start_line": 166,
+          "end_line": 181,
+          "content_sha256": "94574f9b6505e609225d8f4d2d74392c0290685df8d5a011ceaa7c29c38999ab"
+        },
+        {
+          "chunk_id": "1bc3b88c-6244-520e-ba6c-c15385e28467",
+          "path": "app/services/shadow_mode.py",
+          "symbol": "ShadowModeService._run_shadow_prediction",
+          "start_line": 214,
+          "end_line": 228,
+          "content_sha256": "4b57be14b706a3d203ac6ee9e7544552acfa36f34e4608ae38ca4655f05612ec"
+        },
+        {
+          "chunk_id": "c24b03c2-28c7-589f-92d2-2d43fd4883e6",
+          "path": "app/services/shadow_mode.py",
+          "symbol": "ShadowModeService.stop",
+          "start_line": 93,
+          "end_line": 107,
+          "content_sha256": "bb6ec13888ce51ca71b204e3f038a45314d3290c8eb009a892edcda817699bd0"
+        }
+      ]
+    },
+    {
+      "case_id": "dependency-06",
+      "category": "dependency",
+      "metrics": {
+        "hit": 0.0,
+        "recall": 0.0,
+        "reciprocal_rank": 0.0
+      },
+      "hits": [
+        {
+          "chunk_id": "ddaeb533-b7b4-546e-821e-6b300cf269c6",
+          "path": "app/models/factory.py",
+          "symbol": "ModelFactory.create_model",
+          "start_line": 42,
+          "end_line": 58,
+          "content_sha256": "22294addedfc5a611e41e243c422bb1737b01a2828d71c9bd6dac86d5c98fd39"
+        },
+        {
+          "chunk_id": "b2953b63-4484-5a06-9d84-15c97ddc3982",
+          "path": "app/models/factory.py",
+          "symbol": "ModelFactory.create_model",
+          "start_line": 30,
+          "end_line": 41,
+          "content_sha256": "06db6364394bb11c12c7d262420785178c0e1e29bfc4f1b4e7415284b0b407bf"
+        },
+        {
+          "chunk_id": "45b477c1-8ec0-5d2c-ab1e-b49ae8393785",
+          "path": "tests/unit/test_dependency_injection.py",
+          "symbol": "TestModelFactoryIntegration.test_model_factory_creates_pytorch_model",
+          "start_line": 218,
+          "end_line": 229,
+          "content_sha256": "b7574974b1e6944ab9e393c6f9e4ef342165c933fcc432d3afd6bd1063141ddf"
+        }
+      ]
+    },
+    {
+      "case_id": "debugging-01",
+      "category": "debugging",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 0.5
+      },
+      "hits": [
+        {
+          "chunk_id": "644e3e74-252c-54cd-8b06-34c3c862007d",
+          "path": "tests/unit/test_middleware.py",
+          "symbol": "test_middleware_rejects_bad_key_and_accepts_good_key",
+          "start_line": 54,
+          "end_line": 70,
+          "content_sha256": "cdbda0d6f166457e0ff40d514f650daa1e1d32e24e2536a00445d6f7eae9fd2a"
+        },
+        {
+          "chunk_id": "f2107fb6-2e4e-5c1d-8225-236152d47c2b",
+          "path": "app/api/middleware/auth.py",
+          "symbol": "APIKeyAuthMiddleware.dispatch",
+          "start_line": 79,
+          "end_line": 91,
+          "content_sha256": "fca2f683ddbba2fa02186b425276fa2a2c99fccf0c7fe1bc7dfc40a39e4f5c5a"
+        },
+        {
+          "chunk_id": "6dff6a41-8ef9-5ffb-81bf-514318375628",
+          "path": "app/api/middleware/auth.py",
+          "symbol": "APIKeyAuthMiddleware.dispatch",
+          "start_line": 51,
+          "end_line": 64,
+          "content_sha256": "0f7e9c1f5cef6adaec7c115ba33516c2d8d232b1944e87bf0bcdabd77ef54602"
+        }
+      ]
+    },
+    {
+      "case_id": "debugging-02",
+      "category": "debugging",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 0.6666666666666666,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "82b3a3c6-edfa-59fb-936c-1c4ad8c67946",
+          "path": "app/api/middleware/auth.py",
+          "symbol": "APIKeyAuthMiddleware.dispatch",
+          "start_line": 65,
+          "end_line": 78,
+          "content_sha256": "71f4e47c47dbb375a44a989d384760af68cdbd48ae72e344e62cf779b9da6fdf"
+        },
+        {
+          "chunk_id": "bd6dd0d5-7efc-5294-a743-3db279c98af1",
+          "path": "app/api/middleware/auth.py",
+          "symbol": "APIKeyAuthMiddleware",
+          "start_line": 20,
+          "end_line": 29,
+          "content_sha256": "25ffa28d5cbcc40d687c3032d4e8b64d762f4463cd01498ed39d2730cb388f2c"
+        },
+        {
+          "chunk_id": "644e3e74-252c-54cd-8b06-34c3c862007d",
+          "path": "tests/unit/test_middleware.py",
+          "symbol": "test_middleware_rejects_bad_key_and_accepts_good_key",
+          "start_line": 54,
+          "end_line": 70,
+          "content_sha256": "cdbda0d6f166457e0ff40d514f650daa1e1d32e24e2536a00445d6f7eae9fd2a"
+        }
+      ]
+    },
+    {
+      "case_id": "debugging-03",
+      "category": "debugging",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 0.5
+      },
+      "hits": [
+        {
+          "chunk_id": "a9fc1718-b4ee-585c-8f4b-2a863e141ca5",
+          "path": "app/services/prediction.py",
+          "symbol": "PredictionService.predict_batch",
+          "start_line": 103,
+          "end_line": 116,
+          "content_sha256": "36c9d88731f9c65af990e91a186eb7b3e79184f182a4dbcf6b232560872cf9f4"
+        },
+        {
+          "chunk_id": "17ef5e10-4f65-5707-a640-c17af4303b76",
+          "path": "app/services/prediction.py",
+          "symbol": "PredictionService.predict",
+          "start_line": 69,
+          "end_line": 80,
+          "content_sha256": "268acb00f7d1ed5e813288385ce42e27d21caee86df9f5313360e312a98ad824"
+        },
+        {
+          "chunk_id": "fa2c2f17-6442-5fa7-ba07-f880b4df411f",
+          "path": "app/services/prediction.py",
+          "symbol": "PredictionService.predict",
+          "start_line": 81,
+          "end_line": 87,
+          "content_sha256": "1d5093a20264ed250672a1856512501ff8f64b3bc956c742c146356671c76beb"
+        }
+      ]
+    },
+    {
+      "case_id": "debugging-04",
+      "category": "debugging",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "69ea60cc-cfbb-5000-8492-ddde5a135deb",
+          "path": "app/services/redis_cache.py",
+          "symbol": "RedisCacheClient.get",
+          "start_line": 100,
+          "end_line": 105,
+          "content_sha256": "3b9f8bf38ccc29bbb5a872c49b4d98f73702dee07ea0d0d0ed69885fd2553b5a"
+        },
+        {
+          "chunk_id": "3987164c-95b1-5862-bd97-5dd765c64f20",
+          "path": "app/services/redis_cache.py",
+          "symbol": "RedisCacheClient._test_connection",
+          "start_line": 52,
+          "end_line": 59,
+          "content_sha256": "0992a2264a6d0fbc24deec40dca5c5524eedb6ecb7e56a99ee88c874648bdef4"
+        },
+        {
+          "chunk_id": "efac5d5b-a1e1-55cb-8bd4-7fe00d456098",
+          "path": "app/services/redis_cache.py",
+          "symbol": "RedisCacheClient",
+          "start_line": 32,
+          "end_line": 40,
+          "content_sha256": "6e6c7e12737f88863d8eabc1422563ebb82e0df2f47385272ddf723f2f4cdb82"
+        }
+      ]
+    },
+    {
+      "case_id": "debugging-05",
+      "category": "debugging",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "717c8747-e12c-538c-ada8-5ebea98eb543",
+          "path": "app/core/config/model.py",
+          "symbol": "ModelConfig.validate_cache_dir",
+          "start_line": 153,
+          "end_line": 157,
+          "content_sha256": "5119de6a300d6a89c3fa3df36a079d5bbb6c5097fac73daeb4d4dcc0b0d18d36"
+        },
+        {
+          "chunk_id": "6c54fbf0-c3a2-507e-8c4c-89475e663732",
+          "path": "app/core/config/model.py",
+          "symbol": "ModelConfig.validate_cache_dir",
+          "start_line": 137,
+          "end_line": 152,
+          "content_sha256": "029cf564c588eede6c4833f2b17002c9248faec156b087cd846ba59b979a2042"
+        },
+        {
+          "chunk_id": "64365f0c-09db-58d5-95d9-94fbbb313deb",
+          "path": "app/models/persistence.py",
+          "symbol": "ModelPersistenceManager.__init__",
+          "start_line": 36,
+          "end_line": 49,
+          "content_sha256": "07eb79426954e17408e163a24144e9492eb00fddc53c96aec7de28eeefea8f28"
+        }
+      ]
+    },
+    {
+      "case_id": "debugging-06",
+      "category": "debugging",
+      "metrics": {
+        "hit": 0.0,
+        "recall": 0.0,
+        "reciprocal_rank": 0.0
+      },
+      "hits": [
+        {
+          "chunk_id": "ddbdc0cf-d8e2-5549-b90e-b291102cca54",
+          "path": "app/api/routes/monitoring_routes.py",
+          "symbol": "check_drift",
+          "start_line": 205,
+          "end_line": 220,
+          "content_sha256": "505d54489a03f0ed55c428b6f2545af57292937980d187a221166908b94eff07"
+        },
+        {
+          "chunk_id": "1ab7d088-2d0d-5c85-bde0-fdb133b97707",
+          "path": "app/api/routes/monitoring_routes.py",
+          "symbol": "check_drift",
+          "start_line": 221,
+          "end_line": 232,
+          "content_sha256": "3efc80ae243131310261badd59c67a77b5805eee8ce5e93e5f808e99261ded67"
+        },
+        {
+          "chunk_id": "d7b67421-bc47-53fd-8e0a-f479bc3f0673",
+          "path": "app/interfaces/drift_interface.py",
+          "symbol": "IDriftDetector.check_drift",
+          "start_line": 53,
+          "end_line": 66,
+          "content_sha256": "0f256fb6a414674f03df9c80ef3c7a36b6da121c840eef673b41a5c6dcb3d13d"
+        }
+      ]
+    },
+    {
+      "case_id": "changeimpact-01",
+      "category": "change-impact",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 0.5,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "82b3a3c6-edfa-59fb-936c-1c4ad8c67946",
+          "path": "app/api/middleware/auth.py",
+          "symbol": "APIKeyAuthMiddleware.dispatch",
+          "start_line": 65,
+          "end_line": 78,
+          "content_sha256": "71f4e47c47dbb375a44a989d384760af68cdbd48ae72e344e62cf779b9da6fdf"
+        },
+        {
+          "chunk_id": "29708858-1d34-5c78-81da-f77720464d9a",
+          "path": "app/api/middleware/auth.py",
+          "symbol": "APIKeyAuthMiddleware",
+          "start_line": 30,
+          "end_line": 37,
+          "content_sha256": "ae7dbeebde610936569e22c6ebcf0bf5f206422ad61780b1950c4bc9fc575f00"
+        },
+        {
+          "chunk_id": "bd6dd0d5-7efc-5294-a743-3db279c98af1",
+          "path": "app/api/middleware/auth.py",
+          "symbol": "APIKeyAuthMiddleware",
+          "start_line": 20,
+          "end_line": 29,
+          "content_sha256": "25ffa28d5cbcc40d687c3032d4e8b64d762f4463cd01498ed39d2730cb388f2c"
+        }
+      ]
+    },
+    {
+      "case_id": "changeimpact-02",
+      "category": "change-impact",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "e87c6221-fc2c-54a8-9782-7e92f29ea498",
+          "path": "app/services/redis_cache.py",
+          "symbol": "RedisCacheClient.set",
+          "start_line": 124,
+          "end_line": 130,
+          "content_sha256": "2141fa387a621f39118a3d5c6a996dac9cb8a21b90023718a4b1313dfc6e2df2"
+        },
+        {
+          "chunk_id": "de5f3bbf-d8df-5afa-b995-36b9ca92eec2",
+          "path": "app/services/redis_cache.py",
+          "symbol": "RedisCacheClient.set",
+          "start_line": 107,
+          "end_line": 123,
+          "content_sha256": "0fb8cb610584f9ae38485609f842954963cfca5aea112970c69cb9b79329da32"
+        },
+        {
+          "chunk_id": "b3686cdc-9e0b-5223-863b-b8957040ac67",
+          "path": "app/core/config/redis.py",
+          "symbol": "RedisConfig",
+          "start_line": 83,
+          "end_line": 88,
+          "content_sha256": "cf28221a361925eee2b81e3822c22230f1648852174f80eaf9569eb98bf1a270"
+        }
+      ]
+    },
+    {
+      "case_id": "changeimpact-03",
+      "category": "change-impact",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 0.75,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "73b7e3ab-fb74-5e91-a9fb-483d76799e0f",
+          "path": "app/models/factory.py",
+          "symbol": "ModelFactory.create_model",
+          "start_line": 59,
+          "end_line": 73,
+          "content_sha256": "93968db7e2dc97e3446e97633e22a8de5476675ed0dce912cae36d76a44efe24"
+        },
+        {
+          "chunk_id": "ddaeb533-b7b4-546e-821e-6b300cf269c6",
+          "path": "app/models/factory.py",
+          "symbol": "ModelFactory.create_model",
+          "start_line": 42,
+          "end_line": 58,
+          "content_sha256": "22294addedfc5a611e41e243c422bb1737b01a2828d71c9bd6dac86d5c98fd39"
+        },
+        {
+          "chunk_id": "a87481e2-35aa-5881-8f39-df8f88b43702",
+          "path": "app/models/factory.py",
+          "symbol": null,
+          "start_line": 18,
+          "end_line": 21,
+          "content_sha256": "708cc556f69be6eb895b0bc193e02544ce7cdbcab1b30250cb0a07f5fb65a538"
+        }
+      ]
+    },
+    {
+      "case_id": "changeimpact-04",
+      "category": "change-impact",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 0.5,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "17ef5e10-4f65-5707-a640-c17af4303b76",
+          "path": "app/services/prediction.py",
+          "symbol": "PredictionService.predict",
+          "start_line": 69,
+          "end_line": 80,
+          "content_sha256": "268acb00f7d1ed5e813288385ce42e27d21caee86df9f5313360e312a98ad824"
+        },
+        {
+          "chunk_id": "9a1034ee-9118-51ab-80ce-d45b99f83aa0",
+          "path": "tests/unit/test_input_validation.py",
+          "symbol": "TestPredictionServiceValidation.test_text_too_long_raises_error_in_service",
+          "start_line": 342,
+          "end_line": 353,
+          "content_sha256": "6c4ad0b9c25e55e1d9d7525c7b800844ccbad7410415468dd7e76c5ce46d5ef6"
+        },
+        {
+          "chunk_id": "a9fc1718-b4ee-585c-8f4b-2a863e141ca5",
+          "path": "app/services/prediction.py",
+          "symbol": "PredictionService.predict_batch",
+          "start_line": 103,
+          "end_line": 116,
+          "content_sha256": "36c9d88731f9c65af990e91a186eb7b3e79184f182a4dbcf6b232560872cf9f4"
+        }
+      ]
+    },
+    {
+      "case_id": "changeimpact-05",
+      "category": "change-impact",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "cee90281-89b1-5efb-bcf8-fe98421a6fa1",
+          "path": "app/services/shadow_mode.py",
+          "symbol": "ShadowModeService.dispatch_shadow_prediction",
+          "start_line": 182,
+          "end_line": 194,
+          "content_sha256": "cdae8ee06accfb7d99a3349c01590774f93c2f26b2f55277fe06789a99a23a6e"
+        },
+        {
+          "chunk_id": "c7d28faa-41ef-5d3a-bf9b-61a1efaafe90",
+          "path": "app/services/shadow_mode.py",
+          "symbol": "ShadowModeService.dispatch_shadow_prediction",
+          "start_line": 166,
+          "end_line": 181,
+          "content_sha256": "94574f9b6505e609225d8f4d2d74392c0290685df8d5a011ceaa7c29c38999ab"
+        },
+        {
+          "chunk_id": "374e12ba-728d-5ff9-a086-f78564d3d894",
+          "path": "app/core/config/mlops.py",
+          "symbol": "MLOpsConfig",
+          "start_line": 108,
+          "end_line": 121,
+          "content_sha256": "b051e6ef1adcb78da9b5256ac603155e299facac2783eefc6efdf5a824869d7d"
+        }
+      ]
+    },
+    {
+      "case_id": "changeimpact-06",
+      "category": "change-impact",
+      "metrics": {
+        "hit": 1.0,
+        "recall": 1.0,
+        "reciprocal_rank": 1.0
+      },
+      "hits": [
+        {
+          "chunk_id": "36e8ce77-111d-5b1f-9216-ec401c7c3a7a",
+          "path": "app/services/drift_detection.py",
+          "symbol": "DriftDetector.check_drift",
+          "start_line": 324,
+          "end_line": 337,
+          "content_sha256": "307b8600f7a7f5d4b7339bf2cc5c903c0dec573b7a2adf6d3559e1f8ba447456"
+        },
+        {
+          "chunk_id": "ff88c7f4-5ede-54bc-904e-87acd15fc540",
+          "path": "app/services/drift_detection.py",
+          "symbol": "DriftDetector.check_drift",
+          "start_line": 311,
+          "end_line": 323,
+          "content_sha256": "6bc2ca7ddee0ed29ee51656611a16413081f60b7cf8e68512b5ccc4df33a9f32"
+        },
+        {
+          "chunk_id": "c01400c2-3616-50c7-829f-a8054390ee17",
+          "path": "app/services/drift_detection.py",
+          "symbol": "DriftDetector.check_drift",
+          "start_line": 284,
+          "end_line": 297,
+          "content_sha256": "4f238670e39aea4ffc9085f9d312d7995cfad2a9583f7453d9c860659dd5a54f"
+        }
+      ]
+    }
+  ]
+}
