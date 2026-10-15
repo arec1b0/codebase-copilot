@@ -4,6 +4,12 @@ Steps 1–6 have passed on the user's Windows demo environment. For the selected
 working repository, follow [KubeSentiment preparation and acceptance](kubesentiment.md).
 The commands below continue to operate the calculator demo.
 
+For the remaining Week 1 one-command checkpoint, use
+`scripts/run-repository.ps1` from the project root. It prepares the pinned
+KubeSentiment source/index and proves one query with Phoenix readback before
+leaving the API running. `-CheckOnly` performs the same probe and stops owned
+processes. See the repository runbook for prerequisites and saved evidence.
+
 ## Start and inspect
 
 Retain the accepted corpus/index and use `scripts/start-query-api.ps1` with its

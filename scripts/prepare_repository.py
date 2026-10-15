@@ -20,6 +20,16 @@ def main() -> None:
     )
     parser.add_argument("--validate-only", action="store_true")
     parser.add_argument(
+        "--download-models",
+        action="store_true",
+        help="Allow public embedding asset downloads on first use.",
+    )
+    parser.add_argument(
+        "--reuse-index",
+        action="store_true",
+        help="Reuse a complete index after schema/count/source-payload checks.",
+    )
+    parser.add_argument(
         "--local", action="store_true", help="SDK local store for development checks."
     )
     args = parser.parse_args()
@@ -39,7 +49,7 @@ def main() -> None:
     if args.validate_only:
         print("DATASET SOURCE VALIDATION PASSED; no embedding/index acceptance claimed.")
         return
-    backend = CpuEmbeddings(ROOT / "artifacts/models", local_only=True)
+    backend = CpuEmbeddings(ROOT / "artifacts/models", local_only=not args.download_models)
     for chunk in corpus.chunks:
         try:
             backend.check_input(document_text(chunk))
@@ -48,16 +58,26 @@ def main() -> None:
                 f"Embedding token budget exceeded at {chunk.path}:{chunk.start_line}."
             ) from None
     client = connect(local=args.local)
+    wrote_batches = False
 
     def progress(completed: int, total: int) -> None:
+        nonlocal wrote_batches
+        wrote_batches = True
         if completed % 320 == 0 or completed == total:
             print(f"Embedded and indexed: {completed}/{total}", flush=True)
 
     try:
-        print("Embedding and indexing with cached CPU models...", flush=True)
+        print("Verifying the index or embedding and indexing source chunks...", flush=True)
         _, path = index_corpus(
-            client, corpus, backend, ROOT / "artifacts/indexes", progress=progress
+            client,
+            corpus,
+            backend,
+            ROOT / "artifacts/indexes",
+            progress=progress,
+            reuse_complete=args.reuse_index,
         )
+        if args.reuse_index and not wrote_batches:
+            print("Complete index verified; existing embeddings reused.", flush=True)
     finally:
         client.close()
     pointer = ROOT / "artifacts/repository-indexes" / f"{profile.name}.json"

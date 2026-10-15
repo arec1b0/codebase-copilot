@@ -244,7 +244,38 @@ The authored labels remain unreviewed. This is a retrieval measurement, not an
 answer accuracy, latency, or capacity score. Docker server ordering, generation,
 judging, and tracing are measured by the separate Windows acceptance run.
 
-PowerShell execution, Docker Qdrant, native Ollama generation, model timing,
-same-model judging, and Phoenix readback for KubeSentiment remain pending the
-Windows repository acceptance command. The prior demo numbers are not reused
-as KubeSentiment results. Questions/references await maintainer review.
+The user subsequently reported `REAL REPOSITORY ACCEPTANCE PASSED` on Windows:
+30 HTTP/judge successes, zero execution errors, five Phoenix traces, and the same
+retrieval aggregates shown above. The saved baseline is
+`artifacts/baselines/20261015T103820.268147Z`. Full results were reviewed in
+[the baseline failure review](kubesentiment-baseline-review.md). The first project
+commit is `47f5c2d`, reported with a clean working tree. These accepted results
+remain separate from the original demo and the launcher validation below.
+
+## One-command repository startup, version 0.4.1
+
+The launcher adds first-use setup and a single live query/trace probe. It does
+not change the prompt, model choice, dataset labels, or retrieval algorithm, and
+does not claim to repair the documented semantic quality failures.
+
+| Check | Result |
+| --- | --- |
+| Complete offline suite | 120 tests passed |
+| Ruff lint/formatting and strict Mypy | Passed; 44 checked source files |
+| Windows-specific launcher branches | Passed strict Mypy with platform win32 |
+| Fresh source clone and missing pinned commit fetch | Passed with real temporary Git repositories and explicit local transport fixtures |
+| Dirty/untracked source files and source HEAD preservation | Passed |
+| Bootstrap order, missing commands, occupied port, failure/interrupt cleanup | Passed with explicit fake external services |
+| Existing/owned Ollama behavior and missing-model download command | Passed with explicit fake process/HTTP responses |
+| Version/citation/request checks and complete Phoenix collector readback | Passed with explicit HTTP test responses; mismatches rejected |
+| Actual HTTP readiness and graceful owned process shutdown | Passed against a real temporary Uvicorn process on Linux |
+| Complete index reuse and missing-point recovery | Passed with Qdrant SDK local stores and a declared test embedding backend |
+| Actual CPU model identity and 6,801-point index reuse | Passed; cached public assets recovered, source payloads checked, manifest unchanged, no embedding batches run |
+| Locked dependencies | Package versions unchanged; only project version changes to 0.4.1 |
+| Native Windows PowerShell, Docker/Ollama cold start, and live Phoenix probe | Pending target-machine one-command acceptance |
+
+Docker, native Ollama, and PowerShell are unavailable in this execution
+environment. Mocked service tests and a real Linux Uvicorn child do not prove a
+Windows cold start. Run `scripts/run-repository.ps1` for the remaining live
+checkpoint; see [the repository runbook](kubesentiment.md#one-command-startup).
+The full 30-case baseline is not replaced by the one-query startup evidence.

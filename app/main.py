@@ -18,7 +18,7 @@ from app.service import QueryService, build_service
 from observability.tracing import Telemetry, current_trace_id, stage
 
 SERVICE_NAME = "codebase-copilot"
-SERVICE_VERSION = "0.4.0"
+SERVICE_VERSION = "0.4.1"
 LOGGER = logging.getLogger(__name__)
 
 

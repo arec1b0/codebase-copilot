@@ -140,6 +140,7 @@ def index_corpus(
     output: Path,
     *,
     progress: Callable[[int, int], None] | None = None,
+    reuse_complete: bool = False,
 ) -> tuple[IndexManifest, Path]:
     manifest = create_manifest(corpus, backend)
     expected = {chunk.chunk_id: chunk for chunk in corpus.chunks}
@@ -174,6 +175,9 @@ def index_corpus(
         if offset is None:
             break
 
+    if reuse_complete and client.count(manifest.collection, exact=True).count == len(expected):
+        return manifest, save_manifest(output, manifest)
+
     for start in range(0, len(corpus.chunks), 32):
         batch = corpus.chunks[start : start + 32]
         dense, sparse = backend.documents([document_text(chunk) for chunk in batch])
@@ -199,12 +203,16 @@ def index_corpus(
     if client.count(manifest.collection, exact=True).count != manifest.chunk_count:
         raise IndexingError("Qdrant point count does not match the complete corpus.")
 
-    directory = output.resolve() / corpus.repo / manifest.index_version
+    return manifest, save_manifest(output, manifest)
+
+
+def save_manifest(output: Path, manifest: IndexManifest) -> Path:
+    directory = output.resolve() / manifest.repo / manifest.index_version
     serialized = (json.dumps(manifest.model_dump(), sort_keys=True, indent=2) + "\n").encode(
         "utf-8"
     )
     publish_manifest(directory, serialized)
-    return manifest, directory / "manifest.json"
+    return directory / "manifest.json"
 
 
 def search(

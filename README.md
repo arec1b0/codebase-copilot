@@ -12,9 +12,9 @@ validated citations, pinned versions, request IDs, and dependency readiness.
 Step 6 adds OpenTelemetry/Phoenix tracing, a source-bound demo evaluation set,
 baseline measurements, runtime manifests, and a one-command demo launcher.
 The user accepted Steps 1–6 on Windows, including the 30-case demo baseline.
-Version 0.4.0 adds a pinned KubeSentiment corpus, 30 source-backed questions,
-and a separate real-repository acceptance command. Start with
-[the KubeSentiment runbook](docs/kubesentiment.md) for this next checkpoint.
+The pinned KubeSentiment corpus and 30-case Windows baseline are accepted.
+Version 0.4.1 adds [one-command repository startup](docs/kubesentiment.md#one-command-startup),
+including first-use downloads and a live query/Phoenix readback probe.
 
 ## Requirements
 
@@ -29,6 +29,22 @@ If uv is missing, install it with the Windows package manager, then reopen Power
 ```powershell
 winget install --id astral-sh.uv --exact
 ```
+
+## Run KubeSentiment with one command
+
+Install Git, uv, Docker Desktop, and the native Ollama CLI. Start Docker Desktop
+with Linux containers. From the project root, with port 8000 free:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-repository.ps1
+```
+
+The launcher creates credentials if absent, starts the Compose services, prepares
+the pinned source and CPU index, starts/reuses Ollama, and verifies one cited
+query with Phoenix trace readback. First use requires Internet access and downloads
+the model assets. A complete validated index is reused on subsequent starts.
+After `ONE COMMAND ACCEPTANCE PASSED`, the API stays available until Ctrl+C.
+See [the runbook](docs/kubesentiment.md) for check-only mode and saved evidence.
 
 ## First run
 
@@ -50,7 +66,7 @@ Leave the server running. In another PowerShell window:
 $Response = Invoke-RestMethod -Uri "http://127.0.0.1:8000/healthz" -Method Get
 if ($Response.status -ne "ok") { throw "Unexpected health status." }
 if ($Response.service -ne "codebase-copilot") { throw "Unexpected service." }
-if ($Response.version -ne "0.4.0") { throw "Unexpected version." }
+if ($Response.version -ne "0.4.1") { throw "Unexpected version." }
 $Response | ConvertTo-Json
 ```
 
@@ -60,7 +76,7 @@ Expected response:
 {
   "status": "ok",
   "service": "codebase-copilot",
-  "version": "0.4.0"
+  "version": "0.4.1"
 }
 ```
 
@@ -111,9 +127,12 @@ interfaces allow tests to isolate transport failures without downloading an LLM.
 
 ## Remaining Week 1 checkpoints
 
-1. Run the KubeSentiment baseline on Windows and retain its reports and traces.
-2. Review the source-authored questions and references with a repository maintainer.
-3. Calibrate evaluation scores and agree regression thresholds in Week 2.
+1. Accept the one-command KubeSentiment startup on Windows.
+2. Commit the launcher sources and record the accepted `week1-baseline` Git tag.
+
+Question/reference review, judge calibration, holdout data, and regression
+thresholds belong to the Week 2 evaluation work. The accepted baseline and its
+[failure analysis](docs/kubesentiment-baseline-review.md) remain the starting point.
 
 Step 1 does not meet the final Week 1 acceptance criteria by itself.
 
@@ -380,7 +399,7 @@ corpus, index, model cache, Qdrant credentials, and Ollama, then restart the API
 Step 5 is accepted on Windows, including the citation fix. Extract Step 6 into
 `C:\Projects`, replacing source files while retaining `.env` and `artifacts/`.
 Stop the old API with Ctrl+C, then restart with the accepted index manifest using
-the Step 5 startup command. The current API version is `0.4.0`.
+the Step 5 startup command. The current API version is `0.4.1`.
 Tracing is enabled by default and uses the local Phoenix port configured in `.env`.
 The original embedding identity and index remain compatible.
 

@@ -94,6 +94,42 @@ def test_reindexing_reuses_version_and_does_not_duplicate_points(tmp_path: Path)
         assert client.count(manifest.collection, exact=True).count == len(corpus.chunks)
 
 
+def test_complete_index_reuse_skips_embeddings_and_recovers_manifest(tmp_path: Path) -> None:
+    class NoEmbeddingCalls(TestEmbeddings):
+        def documents(
+            self, texts: list[str]
+        ) -> tuple[list[list[float]], list[models.SparseVector]]:
+            raise AssertionError("A complete verified index must not be re-embedded.")
+
+    corpus = make_corpus()
+    with closing(QdrantClient(":memory:")) as client:
+        original, _ = index_corpus(client, corpus, TestEmbeddings(), tmp_path / "first")
+        reused, path = index_corpus(
+            client, corpus, NoEmbeddingCalls(), tmp_path / "recovered", reuse_complete=True
+        )
+        assert reused == original and load_manifest(path) == original
+        assert search(client, reused, NoEmbeddingCalls(), "Counter", top_k=1)
+
+
+def test_index_reuse_repairs_missing_points_but_rejects_changed_source(tmp_path: Path) -> None:
+    corpus = make_corpus()
+    with closing(QdrantClient(":memory:")) as client:
+        original, _ = index_corpus(client, corpus, TestEmbeddings(), tmp_path)
+        first = corpus.chunks[0]
+        client.delete(original.collection, points_selector=[first.chunk_id], wait=True)
+        restored, _ = index_corpus(client, corpus, TestEmbeddings(), tmp_path, reuse_complete=True)
+        assert restored == original
+        assert client.count(original.collection, exact=True).count == len(corpus.chunks)
+        client.set_payload(
+            original.collection,
+            payload={"chunk": {"text": "tampered"}},
+            points=[first.chunk_id],
+            wait=True,
+        )
+        with pytest.raises(IndexingError, match="inconsistent"):
+            index_corpus(client, corpus, TestEmbeddings(), tmp_path, reuse_complete=True)
+
+
 def test_changed_embedding_identity_creates_another_index(tmp_path: Path) -> None:
     corpus = make_corpus()
     with closing(QdrantClient(":memory:")) as client:
