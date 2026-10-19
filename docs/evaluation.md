@@ -73,3 +73,7 @@ Results are checkpointed after each case. Every run receives its own timestamped
 directory. Retain `version-manifest.json`, `results.jsonl`, `summary.json`,
 `report.md`, `warmup.json`, `abstentions.jsonl`, `errors.jsonl`, and `traces/`
 together. Repository runs also retain `dataset.jsonl` and `dataset-profile.json`.
+
+## Week 2 dataset separation and human review
+
+See [the dataset/review workflow](week2-dataset-review.md) for the frozen 30/30 development/holdout split, procedural release guard, source-bound 20-item packet and human agreement audit. Preparation leaves all human scores null and does not calibrate or approve release thresholds.

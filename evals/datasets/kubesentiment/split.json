@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "name": "kubesentiment-dev-holdout-v1",
+  "dev_profile": "profile.json",
+  "holdout_profile": "holdout-profile.json",
+  "dev_profile_sha256": "fb59d00743ca37228e008870498bb1a9bbaddef103225048b63ce8d9e425250f",
+  "holdout_profile_sha256": "5e647f574c77254576307651056cba1a70eac2725900d6f6a21e556488a767c6",
+  "dev_status": "previously-inspected-development",
+  "holdout_policy": "release-only-no-tuning",
+  "separation": "evidence-file-disjoint",
+  "annotation_status": "assistant-authored-awaiting-maintainer-review"
+}

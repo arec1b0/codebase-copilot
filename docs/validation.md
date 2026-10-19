@@ -308,3 +308,11 @@ KubeSentiment source records; it did not invent the missing Windows run manifest
 or claim a full historical-manifest replay. Run
 [the comparison acceptance](week2-comparison.md#windows-acceptance) on Windows
 with the complete original baseline artifacts to complete this step.
+
+## Week 2 preparation evidence
+
+Step 1 was accepted by the maintainer on Windows: 153 tests and the five expected comparator exit-code scenarios; evidence directory artifacts/acceptance/week2-step1/20261019T112724.502850Z.
+
+Step 2 final verification is recorded in the linked pull request's GitHub Actions run. The job checks locked dependencies, lint, formatting, strict typing, tests, frozen-source split validation and archive integrity. Windows preparation acceptance and all 20 actual human labels remain separate follow-up work; see [the workflow](week2-dataset-review.md). No holdout model evaluation is performed.
+
+Initial remote recovery verification: [Actions run 39250982271](https://github.com/arec1b0/codebase-copilot/actions/runs/39250982271), commit 2b866f16a640d15d5756da0b79308586086f79d4: Ruff clean, strict mypy over 53 files, 178 tests passed, 30/30 frozen-source split validation and both ZIP integrity checks passed. Subsequent commits and their checks are visible in PR #2. This receipt does not claim Windows acceptance or completed human annotation.

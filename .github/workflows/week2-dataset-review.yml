@@ -1,0 +1,36 @@
+name: Week 2 dataset review verification
+on:
+  pull_request:
+    branches: [main, feat/week2-evaluation-comparison]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked --python 3.12
+      - run: uv run --locked ruff format --check .
+      - run: uv run --locked ruff check .
+      - run: uv run --locked mypy
+      - run: uv run --locked pytest --junitxml=verification.xml
+      - name: Checkout frozen source without running upstream code
+        run: |
+          git clone --filter=blob:none --no-checkout https://github.com/arec1b0/KubeSentiment artifacts/repositories/KubeSentiment
+          git -C artifacts/repositories/KubeSentiment checkout --detach 1aa3ebfd3f0467ea61142dff72d6534aa6968e20
+      - run: uv run --locked python .github/scripts/build_review_assets.py
+        env:
+          PYTHONPATH: .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: codebase-copilot-week2-review-package
+          path: |
+            delivery/*.zip
+            delivery/*.json
+            verification.xml
+          if-no-files-found: error
+          retention-days: 90

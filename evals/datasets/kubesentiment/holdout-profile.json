@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "name": "kubesentiment-holdout-v1",
+  "repo": "kubesentiment",
+  "source_url": "https://github.com/arec1b0/KubeSentiment",
+  "commit_sha": "1aa3ebfd3f0467ea61142dff72d6534aa6968e20",
+  "ingestion": {
+    "algorithm": "symbol-method-boundaries-v2",
+    "max_chars": 600,
+    "max_file_bytes": 1048576,
+    "max_total_bytes": 33554432,
+    "max_files": 1000
+  },
+  "questions_file": "holdout-questions.jsonl",
+  "questions_sha256": "60ee766e4174f3f2d1b0c9e92e099d83932ef2f7763f790c46c011adc9d8d0ac",
+  "source_layout_sha256": "6295e906d462f9cc503a950e8aff1b3d3a3f905d9edb8851a1959fa94e64975f",
+  "case_count": 30,
+  "annotation_origin": "assistant-authored-from-source"
+}

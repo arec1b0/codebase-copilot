@@ -23,7 +23,14 @@ SOURCE_DIRS = (
     "docs",
     "examples",
 )
-ROOT_FILES = ("pyproject.toml", "uv.lock", "README.md", ".gitignore", ".python-version")
+ROOT_FILES = (
+    "pyproject.toml",
+    "uv.lock",
+    "README.md",
+    ".gitignore",
+    ".gitattributes",
+    ".python-version",
+)
 
 
 def sha256(path: Path) -> str:
