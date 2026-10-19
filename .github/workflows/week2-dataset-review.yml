@@ -14,18 +14,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
       - uses: astral-sh/setup-uv@v6
       - run: uv sync --locked --python 3.12
-      - name: Recover consistent formatting
-        run: |
-          uv run --locked ruff check --select I --fix .
-          uv run --locked ruff format .
-          python - <<'PY'
-          import json, subprocess
-          from pathlib import Path
-          names = subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()
-          for name in names:
-              if name.endswith(".py"):
-                  print("RECOVERED_FILE " + json.dumps({"path": name, "content": Path(name).read_text()}))
-          PY
+      - run: uv run --locked ruff format --check .
       - run: uv run --locked ruff check .
       - run: uv run --locked mypy
       - run: uv run --locked pytest --junitxml=verification.xml

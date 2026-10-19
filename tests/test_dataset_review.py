@@ -450,3 +450,72 @@ def test_runner_guards_holdout_before_loading_any_live_client(
     )
     with pytest.raises(ValueError, match="purpose release"):
         run.main()
+
+
+def test_local_preparation_acceptance_preserves_baseline(
+    review_inputs: tuple[Path, Corpus],
+) -> None:
+    from scripts.check_dataset_review import check
+
+    root, corpus = review_inputs
+    baseline = root / "baseline"
+    baseline.mkdir()
+    (baseline / "results.jsonl").write_bytes((root / "results.jsonl").read_bytes())
+    (baseline / "dataset.jsonl").write_bytes((root / "profiles/dev.jsonl").read_bytes())
+    rows = [read_json(line) for line in (baseline / "results.jsonl").read_bytes().splitlines()]
+    index = IndexManifest(
+        repo=corpus.repo,
+        commit_sha=corpus.commit_sha,
+        corpus_version=corpus.version,
+        corpus_sha256=corpus.sha256,
+        chunk_count=len(corpus.chunks),
+        embeddings={"backend": "synthetic-test-only"},
+        dimension=3,
+        index_version=rows[0]["response"]["index_version"],
+        collection=f"copilot_{corpus.repo}_{rows[0]['response']['index_version'][:24]}",
+    )
+    write_json(
+        baseline / "version-manifest.json",
+        {
+            "dataset_sha256": digest((baseline / "dataset.jsonl").read_bytes()),
+            "dataset_name": "synthetic-dev",
+            "source_commit_sha": corpus.commit_sha,
+            "corpus_version": corpus.version,
+            "index": index.model_dump(),
+            **{
+                key: rows[0]["response"][key]
+                for key in (
+                    "model",
+                    "model_revision",
+                    "model_backend_version",
+                    "prompt_version",
+                    "prompt_sha256",
+                )
+            },
+            "judge": {
+                "model": "synthetic-test-only",
+                "revision": "sha256:" + "a" * 64,
+                "rubric_version": "synthetic-v1",
+                "rubric_sha256": "c" * 64,
+                "calibrated": False,
+                "same_model_as_generator": True,
+            },
+        },
+    )
+    before = {path.name: path.read_bytes() for path in baseline.iterdir()}
+    output = root / "acceptance"
+    check(
+        baseline,
+        root / "corpora",
+        output,
+        split_path=root / "profiles/split.json",
+        selection=root / "selection.json",
+    )
+    assert before == {path.name: path.read_bytes() for path in baseline.iterdir()}
+    _, state = validate_packet(output / "human-review")
+    assert state["pending"] == 20 and not state["ready_for_agreement_audit"]
+    metadata = read_json((output / "human-review/packet.json").read_bytes())
+    assert metadata["declared_judge_identity"]["model"] == "synthetic-test-only"
+    assert metadata["runtime_manifest_sha256"] == digest(
+        (baseline / "version-manifest.json").read_bytes()
+    )
