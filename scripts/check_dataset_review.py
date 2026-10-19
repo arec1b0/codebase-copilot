@@ -12,7 +12,10 @@ from indexing.corpus import load_corpus
 
 
 def check(
-    baseline: Path, corpora_root: Path, output: Path, *,
+    baseline: Path,
+    corpora_root: Path,
+    output: Path,
+    *,
     split_path: Path = ROOT / "evals/datasets/kubesentiment/split.json",
     selection: Path = ROOT / "evals/review/selection-v1.json",
 ) -> None:
@@ -34,8 +37,12 @@ def check(
     write_json(output / "split-validation.json", report)
     for name in ("human-review", "reproducibility-copy"):
         create_packet(
-            baseline / "results.jsonl", corpus, split_path.parent / split.dev_profile,
-            selection, ROOT / "evals/review/rubric-v1.md", output / name,
+            baseline / "results.jsonl",
+            corpus,
+            split_path.parent / split.dev_profile,
+            selection,
+            ROOT / "evals/review/rubric-v1.md",
+            output / name,
             run_manifest=baseline / "version-manifest.json",
         )
     packet, copy = output / "human-review", output / "reproducibility-copy"
@@ -44,8 +51,12 @@ def check(
     }:
         raise ValueError("Review packet is not byte reproducible.")
     labels, state = validate_packet(packet)
-    if state["completed"] != 0 or state["pending"] != 20 or any(
-        item.faithfulness is not None or item.relevance is not None for item in labels.labels
+    if (
+        state["completed"] != 0
+        or state["pending"] != 20
+        or any(
+            item.faithfulness is not None or item.relevance is not None for item in labels.labels
+        )
     ):
         raise ValueError("Human scores must remain unfilled during preparation.")
     try:
@@ -55,7 +66,9 @@ def check(
     else:
         raise ValueError("Agreement audit accepted incomplete human labels.")
     write_json(output / "review-status.json", state)
-    if any(digest((baseline / name).read_bytes()) != value for name, value in run.file_hashes.items()):
+    if any(
+        digest((baseline / name).read_bytes()) != value for name, value in run.file_hashes.items()
+    ):
         raise ValueError("Historical baseline was modified.")
     print("Development/holdout: 30/30; source validation only; no holdout model evaluation.")
     print(f"Review packet: {packet}")

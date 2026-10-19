@@ -123,8 +123,14 @@ def main() -> None:
     parser.add_argument("--profile", type=Path, help="Pinned real-repository dataset profile.")
     parser.add_argument("--purpose", choices=("development", "release"), default="development")
     args = parser.parse_args()
-    role = "demo" if args.profile is None else dataset_role(
-        read_profile(args.profile), ROOT / "evals/datasets/kubesentiment/split.json", args.purpose
+    role = (
+        "demo"
+        if args.profile is None
+        else dataset_role(
+            read_profile(args.profile),
+            ROOT / "evals/datasets/kubesentiment/split.json",
+            args.purpose,
+        )
     )
     index = load_manifest(args.manifest)
     corpus = load_corpus(ROOT / "artifacts/corpora" / index.repo / index.corpus_version)

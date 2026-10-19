@@ -22,12 +22,18 @@ from ingestion.pipeline import fingerprint
 Text = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=2000)]
 Score = Annotated[int, Field(strict=True, ge=0, le=2)]
 IMMUTABLE_FILES = {
-    "items.jsonl", "rubric.md", "faithfulness.md", "relevance.md",
-    "SOURCE-LICENSE.txt", "README.md",
+    "items.jsonl",
+    "rubric.md",
+    "faithfulness.md",
+    "relevance.md",
+    "SOURCE-LICENSE.txt",
+    "README.md",
 }
 PROVENANCE_FIELDS = (
-    "source_results_raw_sha256", "source_corpus_version",
-    "declared_judge_identity", "runtime_manifest_sha256",
+    "source_results_raw_sha256",
+    "source_corpus_version",
+    "declared_judge_identity",
+    "runtime_manifest_sha256",
 )
 
 
@@ -83,9 +89,7 @@ def write_json(path: Path, value: Any) -> None:
     )
 
 
-def review_rows(
-    results: Path, corpus: Corpus, profile: Path
-) -> tuple[dict[str, SavedRow], str]:
+def review_rows(results: Path, corpus: Corpus, profile: Path) -> tuple[dict[str, SavedRow], str]:
     cases, _ = load_repository_dataset(corpus, profile)
     values = [read_json(line) for line in results.read_bytes().splitlines()]
     rows = [SavedRow.model_validate_json(json.dumps(value, allow_nan=False)) for value in values]
@@ -122,10 +126,12 @@ def review_view(items: list[ReviewItem], dimension: str) -> str:
     for item in items:
         sections.append(f"## {item.case.id}\n")
         if dimension == "relevance":
-            sections.extend([
-                "Question:\n" + fenced(item.case.question),
-                "Reference:\n" + fenced(item.case.reference),
-            ])
+            sections.extend(
+                [
+                    "Question:\n" + fenced(item.case.question),
+                    "Reference:\n" + fenced(item.case.reference),
+                ]
+            )
         sections.append("Answer:\n" + fenced(item.answer))
         if dimension == "faithfulness":
             for source in item.sources:
@@ -138,8 +144,14 @@ def review_view(items: list[ReviewItem], dimension: str) -> str:
 
 
 def create_packet(
-    results: Path, corpus: Corpus, profile_path: Path, selection_path: Path,
-    rubric_path: Path, output: Path, *, run_manifest: Path | None = None,
+    results: Path,
+    corpus: Corpus,
+    profile_path: Path,
+    selection_path: Path,
+    rubric_path: Path,
+    output: Path,
+    *,
+    run_manifest: Path | None = None,
 ) -> dict[str, Any]:
     rows, canonical_sha = review_rows(results, corpus, profile_path)
     selection = ReviewSelection.model_validate(read_json(selection_path.read_bytes()))
@@ -164,7 +176,11 @@ def create_packet(
         for row in rows.values():
             assert row.response is not None
             for key in (
-                "model", "model_revision", "model_backend_version", "prompt_version", "prompt_sha256"
+                "model",
+                "model_revision",
+                "model_backend_version",
+                "prompt_version",
+                "prompt_sha256",
             ):
                 if getattr(row.response, key) != getattr(versions, key):
                     raise ValueError("Saved response differs from the declared runtime manifest.")
@@ -176,13 +192,17 @@ def create_packet(
     for key in selection.case_ids:
         row = rows[key]
         assert row.response is not None
-        items.append(ReviewItem(
-            case=row.case, answer=row.response.answer, request_id=str(row.response.request_id),
-            sources=[
-                ReviewSource(source_id=c.source_id, chunk=chunks[c.chunk_id])
-                for c in row.response.citations
-            ],
-        ))
+        items.append(
+            ReviewItem(
+                case=row.case,
+                answer=row.response.answer,
+                request_id=str(row.response.request_id),
+                sources=[
+                    ReviewSource(source_id=c.source_id, chunk=chunks[c.chunk_id])
+                    for c in row.response.citations
+                ],
+            )
+        )
     raw_items = ("\n".join(item.model_dump_json() for item in items) + "\n").encode("utf-8")
     identity = {
         "results_canonical_sha256": canonical_sha,
@@ -197,7 +217,10 @@ def create_packet(
     item_hashes = {item.case.id: fingerprint(item.model_dump(mode="json")) for item in items}
     labels = HumanLabels(
         packet_id=packet_id,
-        labels=[HumanLabel(case_id=item.case.id, item_sha256=item_hashes[item.case.id]) for item in items],
+        labels=[
+            HumanLabel(case_id=item.case.id, item_sha256=item_hashes[item.case.id])
+            for item in items
+        ],
     )
     # Refuse an existing directory so a rerun cannot overwrite human annotations.
     output.mkdir(parents=True, exist_ok=False)
@@ -208,18 +231,20 @@ def create_packet(
     )
     (output / "faithfulness.md").write_bytes(review_view(items, "faithfulness").encode("utf-8"))
     (output / "relevance.md").write_bytes(review_view(items, "relevance").encode("utf-8"))
-    (output / "README.md").write_bytes((
-        "# Development human review packet\n\n"
-        "Read rubric.md, then faithfulness.md, then relevance.md. Edit labels.json only.\n"
-        "All scores and reviewer fields start null; a human must supply all 20 labels.\n"
-        "This is a purposive development sample, not a holdout or a population estimate.\n"
-        "Question/reference and judge ratings are omitted from the faithfulness view.\n"
-        "Judge ratings are omitted from both views. Prior exposure can still bias review.\n"
-        "The source is pinned and checked; historical runtime provenance is declared only.\n"
-        "Without the optional original manifest, judge identity is unavailable.\n"
-        "Run evals.human_review validate --require-complete before audit.\n"
-        "Agreement alone never sets calibrated=true or approves release thresholds.\n"
-    ).encode("utf-8"))
+    (output / "README.md").write_bytes(
+        (
+            b"# Development human review packet\n\n"
+            b"Read rubric.md, then faithfulness.md, then relevance.md. Edit labels.json only.\n"
+            b"All scores and reviewer fields start null; a human must supply all 20 labels.\n"
+            b"This is a purposive development sample, not a holdout or a population estimate.\n"
+            b"Question/reference and judge ratings are omitted from the faithfulness view.\n"
+            b"Judge ratings are omitted from both views. Prior exposure can still bias review.\n"
+            b"The source is pinned and checked; historical runtime provenance is declared only.\n"
+            b"Without the optional original manifest, judge identity is unavailable.\n"
+            b"Run evals.human_review validate --require-complete before audit.\n"
+            b"Agreement alone never sets calibrated=true or approves release thresholds.\n"
+        )
+    )
     provenance = {
         "source_results_raw_sha256": digest(results.read_bytes()),
         "source_corpus_version": corpus.version,
@@ -227,11 +252,18 @@ def create_packet(
         "runtime_manifest_sha256": digest(run_manifest.read_bytes()) if run_manifest else None,
     }
     metadata = {
-        "schema_version": 1, "packet_id": packet_id, "identity": identity,
-        **provenance, "provenance_sha256": fingerprint(provenance),
-        "sampling": selection.sampling, "item_sha256": item_hashes,
-        "immutable_files": {name: digest((output / name).read_bytes()) for name in sorted(IMMUTABLE_FILES)},
-        "provenance_scope": "saved-results-and-pinned-source", "calibrated": False,
+        "schema_version": 1,
+        "packet_id": packet_id,
+        "identity": identity,
+        **provenance,
+        "provenance_sha256": fingerprint(provenance),
+        "sampling": selection.sampling,
+        "item_sha256": item_hashes,
+        "immutable_files": {
+            name: digest((output / name).read_bytes()) for name in sorted(IMMUTABLE_FILES)
+        },
+        "provenance_scope": "saved-results-and-pinned-source",
+        "calibrated": False,
     }
     write_json(output / "packet.json", metadata)
     write_json(output / "labels.json", labels.model_dump(mode="json"))
@@ -239,10 +271,14 @@ def create_packet(
 
 
 def validate_packet(
-    packet: Path, labels_path: Path | None = None,
+    packet: Path,
+    labels_path: Path | None = None,
 ) -> tuple[HumanLabels, dict[str, Any]]:
     metadata = read_json((packet / "packet.json").read_bytes())
-    if metadata["schema_version"] != 1 or fingerprint(metadata["identity"]) != metadata["packet_id"]:
+    if (
+        metadata["schema_version"] != 1
+        or fingerprint(metadata["identity"]) != metadata["packet_id"]
+    ):
         raise ValueError("Review packet identity changed.")
     provenance = {key: metadata[key] for key in PROVENANCE_FIELDS}
     if fingerprint(provenance) != metadata["provenance_sha256"]:
@@ -272,16 +308,22 @@ def validate_packet(
         if label.reference_issue and label.notes is None:
             raise ValueError("A reference issue requires adjudication notes.")
     completed = sum(
-        label.faithfulness is not None and label.relevance is not None
-        and label.faithfulness_reason is not None and label.relevance_reason is not None
+        label.faithfulness is not None
+        and label.relevance is not None
+        and label.faithfulness_reason is not None
+        and label.relevance_reason is not None
         and not label.reference_issue
         for label in labels.labels
     )
     attested = (
-        labels.annotator is not None and labels.reviewed_at is not None and labels.label_origin == "human"
+        labels.annotator is not None
+        and labels.reviewed_at is not None
+        and labels.label_origin == "human"
     )
     return labels, {
-        "packet_id": labels.packet_id, "completed": completed, "pending": 20 - completed,
+        "packet_id": labels.packet_id,
+        "completed": completed,
+        "pending": 20 - completed,
         "human_attestation_present": attested,
         "ready_for_agreement_audit": completed == 20 and attested,
         "calibrated": False,
@@ -289,7 +331,9 @@ def validate_packet(
 
 
 def agreement_audit(
-    packet: Path, results: Path, labels_path: Path | None = None,
+    packet: Path,
+    results: Path,
+    labels_path: Path | None = None,
 ) -> dict[str, Any]:
     labels, state = validate_packet(packet, labels_path)
     if not state["ready_for_agreement_audit"]:
@@ -299,7 +343,8 @@ def agreement_audit(
     if fingerprint(values) != metadata["identity"]["results_canonical_sha256"]:
         raise ValueError("Audit results differ from the reviewed historical results.")
     rows = {
-        row.case_id: row for row in (
+        row.case_id: row
+        for row in (
             SavedRow.model_validate_json(json.dumps(value, allow_nan=False)) for value in values
         )
     }
@@ -315,21 +360,31 @@ def agreement_audit(
             judge_score = getattr(judge, dimension)
             distance = abs(human_score - judge_score)
             distances.append(distance)
-            differences.append({
-                "case_id": label.case_id, "dimension": dimension,
-                "human": human_score, "judge": judge_score, "absolute_difference": distance,
-            })
+            differences.append(
+                {
+                    "case_id": label.case_id,
+                    "dimension": dimension,
+                    "human": human_score,
+                    "judge": judge_score,
+                    "absolute_difference": distance,
+                }
+            )
         summary[dimension] = {
-            "n": 20, "exact_agreement": distances.count(0) / 20,
+            "n": 20,
+            "exact_agreement": distances.count(0) / 20,
             "mean_absolute_error": sum(distances) / 20,
         }
     return {
-        "schema_version": 1, "packet_id": labels.packet_id, "sampling": metadata["sampling"],
+        "schema_version": 1,
+        "packet_id": labels.packet_id,
+        "sampling": metadata["sampling"],
         "labels_sha256": digest((labels_path or packet / "labels.json").read_bytes()),
         "declared_judge_identity": metadata["declared_judge_identity"],
         "runtime_manifest_sha256": metadata["runtime_manifest_sha256"],
-        "summary": summary, "differences": differences,
-        "calibrated": False, "release_threshold_approved": False,
+        "summary": summary,
+        "differences": differences,
+        "calibrated": False,
+        "release_threshold_approved": False,
     }
 
 
@@ -339,7 +394,9 @@ def main() -> int:
     create = commands.add_parser("create")
     create.add_argument("--results", type=Path, required=True)
     create.add_argument("--corpus", type=Path, required=True)
-    create.add_argument("--profile", type=Path, default=ROOT / "evals/datasets/kubesentiment/profile.json")
+    create.add_argument(
+        "--profile", type=Path, default=ROOT / "evals/datasets/kubesentiment/profile.json"
+    )
     create.add_argument("--selection", type=Path, default=ROOT / "evals/review/selection-v1.json")
     create.add_argument("--rubric", type=Path, default=ROOT / "evals/review/rubric-v1.md")
     create.add_argument("--run-manifest", type=Path)
@@ -357,8 +414,13 @@ def main() -> int:
     try:
         if args.command == "create":
             result = create_packet(
-                args.results, load_corpus(args.corpus), args.profile,
-                args.selection, args.rubric, args.output, run_manifest=args.run_manifest,
+                args.results,
+                load_corpus(args.corpus),
+                args.profile,
+                args.selection,
+                args.rubric,
+                args.output,
+                run_manifest=args.run_manifest,
             )
         elif args.command == "validate":
             _, result = validate_packet(args.packet, args.labels)

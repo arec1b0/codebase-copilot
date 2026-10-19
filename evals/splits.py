@@ -46,15 +46,21 @@ def split_profiles(path: Path) -> tuple[DatasetSplit, DatasetProfile, DatasetPro
 def validate_split(corpus: Corpus, path: Path) -> dict[str, object]:
     split, dev, holdout = split_profiles(path)
     dev_cases, dev_sha = load_repository_dataset(corpus, path.parent / split.dev_profile)
-    holdout_cases, holdout_sha = load_repository_dataset(corpus, path.parent / split.holdout_profile)
+    holdout_cases, holdout_sha = load_repository_dataset(
+        corpus, path.parent / split.holdout_profile
+    )
     if {c.id for c in dev_cases} & {c.id for c in holdout_cases}:
         raise ValueError("Development and holdout case IDs overlap.")
+
     def normalize(text: str) -> str:
         return re.sub(r"\W+", " ", text.casefold()).strip()
+
     dev_questions = {normalize(c.question) for c in dev_cases}
     holdout_questions = {normalize(c.question) for c in holdout_cases}
-    if len(dev_questions) != len(dev_cases) or len(holdout_questions) != len(holdout_cases) or (
-        dev_questions & holdout_questions
+    if (
+        len(dev_questions) != len(dev_cases)
+        or len(holdout_questions) != len(holdout_cases)
+        or (dev_questions & holdout_questions)
     ):
         raise ValueError("Normalized questions overlap or are duplicated.")
     dev_files = {e.path for c in dev_cases for e in c.evidence}
@@ -86,7 +92,9 @@ def dataset_role(profile: DatasetProfile, registry: Path, purpose: str) -> str:
         if profile != holdout:
             raise ValueError("Registered holdout profile was modified.")
         if purpose != "release":
-            raise ValueError("Holdout evaluation requires explicit --purpose release; never tune on it.")
+            raise ValueError(
+                "Holdout evaluation requires explicit --purpose release; never tune on it."
+            )
         return "holdout"
     if profile.name == dev.name or profile.questions_sha256 == dev.questions_sha256:
         if profile != dev:

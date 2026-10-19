@@ -20,12 +20,18 @@ def main() -> None:
     source = ROOT / "artifacts/repositories/KubeSentiment"
     actual = subprocess.run(
         ["git", "-C", str(source), "rev-parse", "HEAD"],
-        check=True, capture_output=True, text=True, timeout=15,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=15,
     ).stdout.strip()
     if actual != profile.commit_sha:
         raise ValueError("Upstream checkout is not the frozen dataset source.")
     prepared = ingest(
-        source, ROOT / "artifacts/corpora", repo_id=profile.repo, config=profile.ingestion,
+        source,
+        ROOT / "artifacts/corpora",
+        repo_id=profile.repo,
+        config=profile.ingestion,
     )
     corpus = load_corpus(prepared.directory)
     report = validate_split(corpus, profile_path.parent / "split.json")
@@ -33,8 +39,10 @@ def main() -> None:
     output.mkdir()
     write_json(output / "split-validation.json", report)
     names = (
-        "evals/review/rubric-v1.md", "evals/review/selection-v1.json",
-        "docs/week2-dataset-review.md", "evals/datasets/kubesentiment/SOURCE-LICENSE.txt",
+        "evals/review/rubric-v1.md",
+        "evals/review/selection-v1.json",
+        "docs/week2-dataset-review.md",
+        "evals/datasets/kubesentiment/SOURCE-LICENSE.txt",
     )
     with ZipFile(output / "kubesentiment-review-tools.zip", "w", ZIP_DEFLATED) as archive:
         for name in names:
@@ -51,10 +59,17 @@ def main() -> None:
             "The printed human-review directory contains 20 null labels for a human to fill.\n"
             "No actual human scores or calibration results have been produced.\n",
         )
-    subprocess.run([
-        "git", "archive", "--format=zip",
-        "--output=" + str(output / "codebase-copilot-week2-source.zip"), "HEAD",
-    ], check=True, timeout=30)
+    subprocess.run(
+        [
+            "git",
+            "archive",
+            "--format=zip",
+            "--output=" + str(output / "codebase-copilot-week2-source.zip"),
+            "HEAD",
+        ],
+        check=True,
+        timeout=30,
+    )
     for name in ("kubesentiment-review-tools.zip", "codebase-copilot-week2-source.zip"):
         with ZipFile(output / name) as archive:
             if archive.testzip() is not None:
