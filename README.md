@@ -125,13 +125,20 @@ documentation; readiness and queries return 503.
 Source ingestion, retrieval, and generation use separate modules. Small protocol
 interfaces allow tests to isolate transport failures without downloading an LLM.
 
-## Remaining Week 1 checkpoints
+## Accepted Week 1 and Week 2 work
 
-1. Accept the one-command KubeSentiment startup on Windows.
-2. Commit the launcher sources and record the accepted `week1-baseline` Git tag.
+Week 1 is accepted on Windows and published at tag `week1-baseline`, commit
+`db0eff2`. The latest accepted code suite contained 120 tests; one-command
+startup reused existing assets and a complete verified source index.
 
-Question/reference review, judge calibration, holdout data, and regression
-thresholds belong to the Week 2 evaluation work. The accepted baseline and its
+Week 2 starts with [offline baseline/candidate comparison](docs/week2-comparison.md).
+It recomputes retrieval metrics, validates saved source/response contracts, and
+reports aggregate and individual regressions. Its default provisional policy
+rejects retrieval decreases while keeping uncalibrated judge scores report-only.
+The new Windows comparison acceptance remains pending.
+
+Question/reference review, judge calibration, holdout data, agreed release
+thresholds, and evaluation CI remain Week 2 work. The accepted baseline and its
 [failure analysis](docs/kubesentiment-baseline-review.md) remain the starting point.
 
 Step 1 does not meet the final Week 1 acceptance criteria by itself.
