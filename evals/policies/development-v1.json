@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "name": "retrieval-no-drop-development-v1",
+  "stage": "provisional-development",
+  "max_retrieval_drop": {
+    "hit_rate_at_3": 0.0,
+    "recall_at_3": 0.0,
+    "mrr_at_3": 0.0
+  },
+  "gate_judge_scores": false,
+  "max_judge_drop": 0.0
+}

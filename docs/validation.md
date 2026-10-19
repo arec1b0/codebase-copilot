@@ -272,10 +272,39 @@ does not claim to repair the documented semantic quality failures.
 | Complete index reuse and missing-point recovery | Passed with Qdrant SDK local stores and a declared test embedding backend |
 | Actual CPU model identity and 6,801-point index reuse | Passed; cached public assets recovered, source payloads checked, manifest unchanged, no embedding batches run |
 | Locked dependencies | Package versions unchanged; only project version changes to 0.4.1 |
-| Native Windows PowerShell, Docker/Ollama cold start, and live Phoenix probe | Pending target-machine one-command acceptance |
+| Native Windows PowerShell one-command startup with existing model assets/index and live Phoenix probe | Subsequently accepted by the user; evidence `artifacts/launcher/20261015T115845.750620Z` |
+| Native Windows first-use startup with all model assets absent | Not established by that cached-assets run |
 
-Docker, native Ollama, and PowerShell are unavailable in this execution
-environment. Mocked service tests and a real Linux Uvicorn child do not prove a
-Windows cold start. Run `scripts/run-repository.ps1` for the remaining live
-checkpoint; see [the repository runbook](kubesentiment.md#one-command-startup).
-The full 30-case baseline is not replaced by the one-query startup evidence.
+Docker, native Ollama, and PowerShell were unavailable in the implementation
+environment. The user's subsequent Windows run reported 120 tests and
+`ONE COMMAND ACCEPTANCE PASSED`, reusing the complete index and cached model
+assets. Commit `db0eff2` and tag `week1-baseline` were verified on GitHub.
+The full 30-case baseline is not replaced by the one-query startup evidence;
+a full empty-cache cold start was not measured by that run.
+
+## Week 2, step 1: offline saved-run comparison
+
+The implementation adds a saved-run comparator, provisional development policy,
+and Windows acceptance command. It does not alter serving or retrieval.
+
+| Check | Result |
+| --- | --- |
+| Complete code suite | 153 tests passed on Linux with Python 3.12.14 |
+| Ruff lint/formatting and strict Mypy | Passed; 49 checked source files |
+| Actual CLI self-comparison | Exit 0 with equal metrics |
+| Edited retrieval/citation fixtures | Exit 1; individual regressions or deterministic failure retained |
+| Missing-case fixture | Exit 2; no passing report written |
+| Uncalibrated judge decline | Reported; does not gate by default |
+| Baseline preservation and refusal to replace output | Passed |
+| Historical KubeSentiment rows | All 30 parsed; saved questions/chunks/citations matched the pinned source; recomputed metrics matched the accepted aggregates |
+| Full original Windows run replay | Pending; original Windows version manifest/corpus must be read on the target machine |
+| Native PowerShell comparison wrapper | Pending target-machine acceptance |
+| PR/full evaluation CI, human calibration, unseen holdout | Later Week 2 work |
+
+CLI unit fixtures use a real temporary Git repository and ingestion pipeline
+with explicitly synthetic answers/judge scores. They do not claim live model
+quality. The historical 30-row compatibility check used the pinned local
+KubeSentiment source records; it did not invent the missing Windows run manifest
+or claim a full historical-manifest replay. Run
+[the comparison acceptance](week2-comparison.md#windows-acceptance) on Windows
+with the complete original baseline artifacts to complete this step.

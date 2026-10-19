@@ -215,7 +215,11 @@ def main() -> None:
             saved_traces = 1
             versions = manifest(index, warmup, dataset_sha, containers)
             versions["dataset_name"] = dataset_name
-            if args.profile is not None:
+            if args.profile is None:
+                (directory / "dataset.jsonl").write_bytes(
+                    (ROOT / "evals/dataset.jsonl").read_bytes()
+                )
+            else:
                 profile_content = args.profile.read_bytes()
                 versions["dataset_profile"] = json.loads(profile_content)
                 versions["dataset_profile_sha256"] = hashlib.sha256(profile_content).hexdigest()

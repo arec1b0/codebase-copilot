@@ -1,5 +1,9 @@
 # Baseline contract
 
+For offline comparison of saved runs, see
+[Week 2 saved-run comparison](week2-comparison.md). The original live baseline
+measurement contract below remains applicable.
+
 Run `python -m evals.run --manifest <accepted manifest.json>` from the project
 root while the API, Ollama, Docker Qdrant, and Phoenix are running. The runner
 uses the saved demo corpus by default and actual cached CPU embeddings. Pass
