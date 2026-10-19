@@ -232,18 +232,16 @@ def create_packet(
     (output / "faithfulness.md").write_bytes(review_view(items, "faithfulness").encode("utf-8"))
     (output / "relevance.md").write_bytes(review_view(items, "relevance").encode("utf-8"))
     (output / "README.md").write_bytes(
-        (
-            b"# Development human review packet\n\n"
-            b"Read rubric.md, then faithfulness.md, then relevance.md. Edit labels.json only.\n"
-            b"All scores and reviewer fields start null; a human must supply all 20 labels.\n"
-            b"This is a purposive development sample, not a holdout or a population estimate.\n"
-            b"Question/reference and judge ratings are omitted from the faithfulness view.\n"
-            b"Judge ratings are omitted from both views. Prior exposure can still bias review.\n"
-            b"The source is pinned and checked; historical runtime provenance is declared only.\n"
-            b"Without the optional original manifest, judge identity is unavailable.\n"
-            b"Run evals.human_review validate --require-complete before audit.\n"
-            b"Agreement alone never sets calibrated=true or approves release thresholds.\n"
-        )
+        b"# Development human review packet\n\n"
+        b"Read rubric.md, then faithfulness.md, then relevance.md. Edit labels.json only.\n"
+        b"All scores and reviewer fields start null; a human must supply all 20 labels.\n"
+        b"This is a purposive development sample, not a holdout or a population estimate.\n"
+        b"Question/reference and judge ratings are omitted from the faithfulness view.\n"
+        b"Judge ratings are omitted from both views. Prior exposure can still bias review.\n"
+        b"The source is pinned and checked; historical runtime provenance is declared only.\n"
+        b"Without the optional original manifest, judge identity is unavailable.\n"
+        b"Run evals.human_review validate --require-complete before audit.\n"
+        b"Agreement alone never sets calibrated=true or approves release thresholds.\n"
     )
     provenance = {
         "source_results_raw_sha256": digest(results.read_bytes()),
