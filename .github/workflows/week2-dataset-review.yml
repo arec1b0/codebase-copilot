@@ -1,0 +1,20 @@
+name: Week 2 dataset review verification
+on:
+  pull_request:
+    branches: [main, feat/week2-evaluation-comparison]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked --python 3.12
+      - run: uv run --locked ruff check .
+      - run: uv run --locked ruff format --check .
+      - run: uv run --locked mypy app ingestion indexing observability evals scripts
+      - run: uv run --locked pytest
