@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "name": "kubesentiment-dev-human-review-v1",
+  "sampling": "purposive-development-sample",
+  "results_canonical_sha256": "102340b62d7ea846133c6bc25d4bf721e0cd34c8a45b1378180f02ec01c72a63",
+  "dataset_sha256": "e37fad215160bab13414d459f60063e00cfe9eb8d5f7cf70a5ce5b19c1d25f59",
+  "case_ids": [
+    "locating-01",
+    "locating-03",
+    "locating-05",
+    "locating-06",
+    "explanation-01",
+    "explanation-02",
+    "explanation-03",
+    "explanation-06",
+    "dependency-01",
+    "dependency-02",
+    "dependency-05",
+    "dependency-06",
+    "debugging-01",
+    "debugging-03",
+    "debugging-04",
+    "debugging-06",
+    "changeimpact-01",
+    "changeimpact-02",
+    "changeimpact-04",
+    "changeimpact-06"
+  ]
+}

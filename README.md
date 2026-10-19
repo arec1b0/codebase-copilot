@@ -460,3 +460,7 @@ required when retaining the accepted Step 4 index.
 - Generation model: https://ollama.com/library/qwen2.5-coder:3b
 - OpenTelemetry Python: https://opentelemetry.io/docs/languages/python/instrumentation/
 - Phoenix tracing: https://arize.com/docs/phoenix/tracing/how-to-tracing/setup-tracing/setup-using-phoenix-otel
+
+## Week 2 dataset and review preparation
+
+[Dataset separation and manual review](docs/week2-dataset-review.md) adds 30 source-validated holdout cases and a 20-item development review packet. Human labels remain pending; the judge remains uncalibrated. Preparation never queries a model on the holdout.

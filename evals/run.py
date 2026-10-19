@@ -21,6 +21,7 @@ from evals.contracts import EvalCase, retrieval_metrics
 from evals.datasets import load_repository_dataset, read_profile
 from evals.judge import RUBRIC_SHA256, RUBRIC_VERSION, assess
 from evals.phoenix import fetch_trace
+from evals.splits import dataset_role
 from evals.versions import container_identities, manifest
 from indexing.config import ROOT, connect
 from indexing.corpus import Corpus, load_corpus
@@ -120,7 +121,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--profile", type=Path, help="Pinned real-repository dataset profile.")
+    parser.add_argument("--purpose", choices=("development", "release"), default="development")
     args = parser.parse_args()
+    role = "demo" if args.profile is None else dataset_role(
+        read_profile(args.profile), ROOT / "evals/datasets/kubesentiment/split.json", args.purpose
+    )
     index = load_manifest(args.manifest)
     corpus = load_corpus(ROOT / "artifacts/corpora" / index.repo / index.corpus_version)
     if corpus.sha256 != index.corpus_sha256 or corpus.commit_sha != index.commit_sha:
@@ -215,6 +220,8 @@ def main() -> None:
             saved_traces = 1
             versions = manifest(index, warmup, dataset_sha, containers)
             versions["dataset_name"] = dataset_name
+            versions["dataset_split"] = role
+            versions["evaluation_purpose"] = args.purpose
             if args.profile is None:
                 (directory / "dataset.jsonl").write_bytes(
                     (ROOT / "evals/dataset.jsonl").read_bytes()

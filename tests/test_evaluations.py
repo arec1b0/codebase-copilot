@@ -461,6 +461,7 @@ def test_baseline_cli_exports_reports_and_counts_failed_cases(
         return original_client(base_url=base_url, transport=httpx.MockTransport(handler))
 
     monkeypatch.setattr(run, "ROOT", tmp_path)
+    monkeypatch.setattr(run, "dataset_role", lambda *args: "custom")
     monkeypatch.setattr(run, "load_manifest", lambda path: index)
     monkeypatch.setattr(run, "load_corpus", lambda path: corpus)
     monkeypatch.setattr(run, "container_identities", lambda: {"test_only": True})

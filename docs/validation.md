@@ -308,3 +308,9 @@ KubeSentiment source records; it did not invent the missing Windows run manifest
 or claim a full historical-manifest replay. Run
 [the comparison acceptance](week2-comparison.md#windows-acceptance) on Windows
 with the complete original baseline artifacts to complete this step.
+
+## Week 2 preparation evidence
+
+Step 1 was accepted by the maintainer on Windows: 153 tests and the five expected comparator exit-code scenarios; evidence directory artifacts/acceptance/week2-step1/20261019T112724.502850Z.
+
+Step 2 final verification is recorded in the linked pull request's GitHub Actions run. The job checks locked dependencies, lint, formatting, strict typing, tests, frozen-source split validation and archive integrity. Windows preparation acceptance and all 20 actual human labels remain separate follow-up work; see [the workflow](week2-dataset-review.md). No holdout model evaluation is performed.
