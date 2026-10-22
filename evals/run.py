@@ -17,9 +17,10 @@ from app.main import SERVICE_VERSION
 from app.model import OllamaModel
 from app.prompt import PROMPT_SHA256, PROMPT_VERSION
 from app.service import QdrantRetriever
+from evals.context import context_issues
 from evals.contracts import EvalCase, retrieval_metrics
 from evals.datasets import load_repository_dataset, read_profile
-from evals.judge import RUBRIC_SHA256, RUBRIC_VERSION, assess
+from evals.judge import RUBRIC_HASHES, RUBRIC_SHA256, RUBRIC_VERSION, assess
 from evals.phoenix import fetch_trace
 from evals.splits import dataset_role
 from evals.versions import container_identities, manifest
@@ -213,6 +214,12 @@ def main() -> None:
                         chunk.repo,
                     ):
                         raise ValueError("Response citation differs from its saved source record.")
+                if body.context_sources is None or context_issues(
+                    body, expected, case.question, case.language
+                ):
+                    raise ValueError(
+                        "API context is missing or differs from its exact source input."
+                    )
                 return body
 
             print("Running one excluded warm-up query...", flush=True)
@@ -228,6 +235,7 @@ def main() -> None:
             versions["dataset_name"] = dataset_name
             versions["dataset_split"] = role
             versions["evaluation_purpose"] = args.purpose
+            versions["context_contract"] = "ordered-source-context-v1"
             if args.profile is None:
                 (directory / "dataset.jsonl").write_bytes(
                     (ROOT / "evals/dataset.jsonl").read_bytes()
@@ -248,6 +256,7 @@ def main() -> None:
                 "rubric_sha256": RUBRIC_SHA256,
                 "calibrated": False,
                 "same_model_as_generator": True,
+                "dimension_rubrics": RUBRIC_HASHES,
             }
             write_json(directory / "version-manifest.json", versions)
             chunks = {chunk.chunk_id: chunk for chunk in corpus.chunks}
@@ -266,8 +275,10 @@ def main() -> None:
                         exported = fetch_trace(phoenix, body.trace_id or "", str(body.request_id))
                         write_json(directory / "traces" / f"{body.trace_id}.json", exported)
                         saved_traces += 1
-                    judgment, usage = assess(model, identity, case, body, chunks)
-                    row["judge"], row["judge_usage"] = judgment.model_dump(), usage.model_dump()
+                    judged = assess(model, identity, case, body, chunks)
+                    row["judge"] = judged.assessment.model_dump()
+                    row["judge_usage"] = judged.usage.model_dump()
+                    row["judge_calls"] = [call.model_dump() for call in judged.calls]
                 except Exception as error:
                     row["error"] = {"type": type(error).__name__, "detail": str(error)[:500]}
                 rows.append(row)

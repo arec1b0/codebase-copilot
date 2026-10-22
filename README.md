@@ -66,7 +66,7 @@ Leave the server running. In another PowerShell window:
 $Response = Invoke-RestMethod -Uri "http://127.0.0.1:8000/healthz" -Method Get
 if ($Response.status -ne "ok") { throw "Unexpected health status." }
 if ($Response.service -ne "codebase-copilot") { throw "Unexpected service." }
-if ($Response.version -ne "0.4.1") { throw "Unexpected version." }
+if ($Response.version -ne "0.5.0") { throw "Unexpected version." }
 $Response | ConvertTo-Json
 ```
 
@@ -76,7 +76,7 @@ Expected response:
 {
   "status": "ok",
   "service": "codebase-copilot",
-  "version": "0.4.1"
+  "version": "0.5.0"
 }
 ```
 
@@ -406,7 +406,7 @@ corpus, index, model cache, Qdrant credentials, and Ollama, then restart the API
 Step 5 is accepted on Windows, including the citation fix. Extract Step 6 into
 `C:\Projects`, replacing source files while retaining `.env` and `artifacts/`.
 Stop the old API with Ctrl+C, then restart with the accepted index manifest using
-the Step 5 startup command. The current API version is `0.4.1`.
+the Step 5 startup command. The current API version is `0.5.0`.
 Tracing is enabled by default and uses the local Phoenix port configured in `.env`.
 The original embedding identity and index remain compatible.
 
@@ -463,4 +463,13 @@ required when retaining the accepted Step 4 index.
 
 ## Week 2 dataset and review preparation
 
-[Dataset separation and manual review](docs/week2-dataset-review.md) adds 30 source-validated holdout cases and a 20-item development review packet. Human labels remain pending; the judge remains uncalibrated. Preparation never queries a model on the holdout.
+[Dataset separation and manual review](docs/week2-dataset-review.md) adds 30 source-validated holdout cases and a 20-item development review packet. The 20-item human review is complete; the judge remains uncalibrated. See [the agreement review](docs/kubesentiment-human-agreement-review.md). Preparation never queries a model on the holdout.
+
+## Week 2 recorded context and separated judge
+
+Version 0.5.0 records the actual ordered generator context and message hash in
+query responses. The evaluation runner now uses separate faithfulness and
+relevance calls with per-call provenance and usage. Historical responses retain
+unknown context. [Step 3 acceptance](docs/week2-judge-context.md) re-scores the
+same 20 frozen development answers against the completed human labels; it does
+not regenerate answers or query the holdout. Semantic scores remain report-only.

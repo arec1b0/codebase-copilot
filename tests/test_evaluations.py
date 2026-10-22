@@ -9,14 +9,21 @@ from uuid import uuid4
 import httpx
 import pytest
 
-from app.contracts import ModelIdentity, QueryResponse, TokenUsage
+from app.contracts import ModelIdentity, QueryRequest, QueryResponse, TokenUsage
 from app.main import SERVICE_VERSION
 from app.model import OllamaModel
-from app.prompt import PROMPT_SHA256, PROMPT_VERSION
+from app.prompt import PROMPT_SHA256, PROMPT_VERSION, build_prompt, input_sha256
 from evals import run
 from evals.contracts import EvalCase, Evidence, JudgeAssessment, retrieval_metrics
 from evals.datasets import DatasetProfile, load_repository_dataset, source_layout
-from evals.judge import assess
+from evals.judge import (
+    DIMENSIONS,
+    RUBRIC_HASHES,
+    DimensionAssessment,
+    JudgeCall,
+    JudgeResult,
+    assess,
+)
 from evals.phoenix import fetch_trace
 from evals.run import load_dataset, percentile, summarize
 from indexing.config import ROOT
@@ -229,8 +236,8 @@ def test_judge_is_pinned_and_uses_native_structured_output() -> None:
     body = QueryResponse.model_validate(
         {
             "request_id": "00000000-0000-0000-0000-000000000001",
-            "status": "answered",
-            "answer": "The Python add function returns left + right. [S1]",
+            "status": "insufficient_context",
+            "answer": "No cited text supplied.",
             "citations": [],
             "model": "qwen2.5-coder:3b",
             "model_revision": "sha256:" + "e" * 64,
@@ -249,6 +256,8 @@ def test_judge_is_pinned_and_uses_native_structured_output() -> None:
         }
     )
 
+    calls = []
+
     def handler(request: httpx.Request) -> httpx.Response:
         if request.url.path == "/api/tags":
             return httpx.Response(200, json={"models": [{"name": body.model, "digest": "e" * 64}]})
@@ -256,6 +265,7 @@ def test_judge_is_pinned_and_uses_native_structured_output() -> None:
             return httpx.Response(200, json={"version": "test"})
         payload = json.loads(request.content)
         assert payload["stream"] is False and payload["format"]["type"] == "object"
+        calls.append(payload)
         return httpx.Response(
             200,
             json={
@@ -265,10 +275,8 @@ def test_judge_is_pinned_and_uses_native_structured_output() -> None:
                 "message": {
                     "content": json.dumps(
                         {
-                            "faithfulness": 1,
-                            "relevance": 2,
-                            "faithfulness_reason": "No cited text supplied.",
-                            "relevance_reason": "Answers the task.",
+                            "score": 0,
+                            "reason": "Synthetic abstention score.",
                         }
                     )
                 },
@@ -283,8 +291,15 @@ def test_judge_is_pinned_and_uses_native_structured_output() -> None:
         httpx.Client(base_url="http://ollama", transport=httpx.MockTransport(handler)),
     )
     try:
-        result, usage = assess(model, model.identity(), case, body, {})
-        assert result.relevance == 2 and usage.output_tokens == 40
+        result = assess(model, model.identity(), case, body, {})
+        assert result.assessment.relevance == 0 and result.usage.output_tokens == 80
+        assert len(calls) == 2
+        assert set(json.loads(calls[0]["messages"][1]["content"])) == {"answer", "sources"}
+        assert set(json.loads(calls[1]["messages"][1]["content"])) == {
+            "question",
+            "reference",
+            "answer",
+        }
     finally:
         model.close()
 
@@ -418,6 +433,9 @@ def test_baseline_cli_exports_reports_and_counts_failed_cases(
                 ["POST /query", "retrieval", "rerank", "generation", "citation_validation"]
             )
         ]
+        prompt, available = build_prompt(
+            QueryRequest(question=case.question, language=case.language), [hit]
+        )
         return httpx.Response(
             200,
             headers={"X-Request-ID": request_id, "X-Trace-ID": trace_id},
@@ -426,6 +444,8 @@ def test_baseline_cli_exports_reports_and_counts_failed_cases(
                 "trace_id": trace_id,
                 "status": "answered",
                 "answer": case.reference + " [S1]",
+                "context_sources": [c.model_dump() for c in available.values()],
+                "generation_input_sha256": input_sha256(prompt),
                 "citations": [
                     {
                         "source_id": "S1",
@@ -474,14 +494,24 @@ def test_baseline_cli_exports_reports_and_counts_failed_cases(
     monkeypatch.setattr(
         run,
         "assess",
-        lambda *args: (
-            JudgeAssessment(
+        lambda *args: JudgeResult(
+            assessment=JudgeAssessment(
                 faithfulness=2,
                 relevance=2,
                 faithfulness_reason="Synthetic test.",
                 relevance_reason="Synthetic test.",
             ),
-            TokenUsage(input_tokens=50, output_tokens=10),
+            usage=TokenUsage(input_tokens=50, output_tokens=10),
+            calls=[
+                JudgeCall(
+                    dimension=dim,
+                    rubric_sha256=RUBRIC_HASHES[dim],
+                    input_sha256="a" * 64,
+                    assessment=DimensionAssessment(score=2, reason="Synthetic test."),
+                    usage=TokenUsage(input_tokens=25, output_tokens=5),
+                )
+                for dim in DIMENSIONS
+            ],
         ),
     )
     arguments = ["evals.run", "--manifest", str(tmp_path / "unused.json")]

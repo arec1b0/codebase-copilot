@@ -1,6 +1,6 @@
 [project]
 name = "codebase-copilot"
-version = "0.4.1"
+version = "0.5.0"
 description = "A versioned codebase assistant with measurable quality and operations."
 requires-python = ">=3.12,<3.13"
 dependencies = [

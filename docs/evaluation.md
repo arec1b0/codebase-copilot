@@ -16,6 +16,8 @@ citation provenance.
 
 Each of 30 cases has a separate retrieval measurement with the same pinned
 backend, language filter, and top-k 3 as its API call. Hits and scores are saved.
+New API responses also retain the actual ordered context after the prompt budget
+filter. Independent retrieval hits are not substituted for that context.
 A target range is covered only when a chunk contains the entire labeled range
 in the same source path. Repository profiles additionally require the exact
 evidence quote within the asserted line range. References and question bytes
@@ -45,8 +47,11 @@ No quality threshold is agreed yet: a low score remains a valid measurement.
 ## Judge limitations
 
 `evals/judge.py` versions the rubric and records the actual model digest/backend,
-ratings, reasons, and usage. Faithfulness considers cited source text; relevance
-uses the question/reference. The rubric assigns zero to a factual non-answer on
+ratings, reasons, and usage. Version 2 uses two separate native calls:
+faithfulness receives only the answer and cited source text; relevance receives
+only the question, reference and answer. Per-call rubric/input hashes and usage
+are saved, with aggregate usage for both calls. Historical v1 scores remain
+readable; cross-rubric full-run score deltas are incomparable. The rubric assigns zero to a factual non-answer on
 this entirely answerable set. This is not a general abstention-quality metric.
 
 The judge is the same model as generation, so its uncalibrated estimates can share
@@ -77,3 +82,11 @@ together. Repository runs also retain `dataset.jsonl` and `dataset-profile.json`
 ## Week 2 dataset separation and human review
 
 See [the dataset/review workflow](week2-dataset-review.md) for the frozen 30/30 development/holdout split, procedural release guard, source-bound 20-item packet and human agreement audit. Preparation leaves all human scores null and does not calibrate or approve release thresholds.
+
+## Frozen-answer judge comparison
+
+[Step 3](week2-judge-context.md) compares the historical v1 judge with separated
+v2 calls against the same 20 human-labelled answers. It creates a distinct
+judge-rescoring experiment, preserves the original baseline and labels, and
+leaves calibration/release approval false. The experiment does not require the
+query API, Qdrant or Phoenix. Real v2 agreement must be measured locally.

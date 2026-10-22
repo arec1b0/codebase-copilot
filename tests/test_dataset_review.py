@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+import httpx
 import pytest
 
 from evals import human_review, run
@@ -135,7 +136,7 @@ def review_seed(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Corpus]
                             ],
                             "model": "synthetic-test-only",
                             "model_revision": "sha256:" + "a" * 64,
-                            "model_backend_version": "test:1",
+                            "model_backend_version": "ollama:test",
                             "prompt_version": "synthetic-v1",
                             "prompt_sha256": "b" * 64,
                             "index_version": version,
@@ -452,12 +453,7 @@ def test_runner_guards_holdout_before_loading_any_live_client(
         run.main()
 
 
-def test_local_preparation_acceptance_preserves_baseline(
-    review_inputs: tuple[Path, Corpus],
-) -> None:
-    from scripts.check_dataset_review import check
-
-    root, corpus = review_inputs
+def make_baseline(root: Path, corpus: Corpus) -> Path:
     baseline = root / "baseline"
     baseline.mkdir()
     (baseline / "results.jsonl").write_bytes((root / "results.jsonl").read_bytes())
@@ -502,6 +498,16 @@ def test_local_preparation_acceptance_preserves_baseline(
             },
         },
     )
+    return baseline
+
+
+def test_local_preparation_acceptance_preserves_baseline(
+    review_inputs: tuple[Path, Corpus],
+) -> None:
+    from scripts.check_dataset_review import check
+
+    root, corpus = review_inputs
+    baseline = make_baseline(root, corpus)
     before = {path.name: path.read_bytes() for path in baseline.iterdir()}
     output = root / "acceptance"
     check(
@@ -519,3 +525,191 @@ def test_local_preparation_acceptance_preserves_baseline(
     assert metadata["runtime_manifest_sha256"] == digest(
         (baseline / "version-manifest.json").read_bytes()
     )
+
+
+@pytest.mark.parametrize(
+    "damage,allow_backend_change",
+    [
+        (None, False),
+        ("pending", False),
+        ("packet", False),
+        ("baseline", False),
+        ("existing", False),
+        ("revision", False),
+        ("backend", False),
+        ("second-call", False),
+        ("backend", True),
+        ("revision", True),
+        ("backend-during-call", True),
+    ],
+)
+def test_frozen_answer_rescoring_with_completed_human_labels(
+    review_inputs: tuple[Path, Corpus],
+    damage: str | None,
+    allow_backend_change: bool,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from app.model import OllamaModel
+    from evals.rejudge import rejudge
+
+    root, corpus = review_inputs
+    baseline = make_baseline(root, corpus)
+    target = packet(root, corpus)
+    synthetic_complete_labels(target, attest=True)
+    output = root / "rescore"
+    if damage == "pending":
+        path = target / "labels.json"
+        value = read_json(path.read_bytes())
+        value["labels"][0]["faithfulness"] = None
+        write_json(path, value)
+    elif damage == "packet":
+        path = target / "items.jsonl"
+        path.write_bytes(path.read_bytes().replace(b"Synthetic answer", b"Changed answer"))
+    elif damage == "baseline":
+        path = baseline / "results.jsonl"
+        path.write_bytes(path.read_bytes().replace(b"Synthetic answer", b"Changed answer"))
+    elif damage == "existing":
+        output.mkdir()
+        (output / "keep.txt").write_text("Keep this file.")
+    protected = {
+        str(p): p.read_bytes()
+        for directory in (target, baseline)
+        for p in directory.iterdir()
+        if p.is_file()
+    }
+    calls: list[dict[str, Any]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/api/tags":
+            return httpx.Response(
+                200,
+                json={
+                    "models": [
+                        {
+                            "name": "synthetic-test-only",
+                            "digest": ("f" if damage == "revision" else "a") * 64,
+                        }
+                    ]
+                },
+            )
+        if request.url.path == "/api/version":
+            backend = "new-test" if damage in ("backend", "backend-during-call") else "test"
+            if damage == "backend-during-call" and calls:
+                backend = "mid-run-update"
+            return httpx.Response(200, json={"version": backend})
+        calls.append(json.loads(request.content))
+        relevance = len(calls) % 2 == 0
+        if damage == "second-call" and relevance:
+            return httpx.Response(503)
+        return httpx.Response(
+            200,
+            json={
+                "model": "synthetic-test-only",
+                "done": True,
+                "done_reason": "stop",
+                "message": {
+                    "content": json.dumps(
+                        {"score": 2 if relevance else 1, "reason": "Synthetic test only."}
+                    )
+                },
+                "prompt_eval_count": 40,
+                "eval_count": 10,
+            },
+        )
+
+    model = OllamaModel(
+        "http://ollama",
+        "synthetic-test-only",
+        httpx.Client(base_url="http://ollama", transport=httpx.MockTransport(handler)),
+    )
+    try:
+        backend_allowed = damage == "backend" and allow_backend_change
+        if damage not in (None, "second-call", "backend-during-call") and not backend_allowed:
+            with pytest.raises((ValueError, FileExistsError)) as error:
+                rejudge(
+                    baseline,
+                    target,
+                    root / "corpora",
+                    output,
+                    model,
+                    allow_backend_change=allow_backend_change,
+                )
+            assert not calls
+            if damage in ("revision", "backend"):
+                report = read_json((output / "identity-check.json").read_bytes())
+                key = "revision" if damage == "revision" else "backend_version"
+                assert report["matched"] is False and set(report["differences"]) == {key}
+                assert report["accepted"] is False
+                assert report["backend_change_allowed"] == allow_backend_change
+                assert report["scoring_calls_started"] is False
+                assert key in str(error.value)
+                assert report["expected"][key] in str(error.value)
+                assert report["observed"][key] in str(error.value)
+                assert not (output / "results.jsonl").exists()
+            if damage == "existing":
+                assert (output / "keep.txt").read_text() == "Keep this file."
+            return
+        summary = rejudge(
+            baseline,
+            target,
+            root / "corpora",
+            output,
+            model,
+            allow_backend_change=allow_backend_change,
+        )
+        report = read_json((output / "identity-check.json").read_bytes())
+        changed_backend = damage in ("backend", "backend-during-call")
+        assert report["matched"] == (not changed_backend)
+        assert report["accepted"] is True
+        assert report["backend_change_allowed"] == allow_backend_change
+        assert len(calls) == (1 if damage == "backend-during-call" else 40)
+        assert summary["backend_changed"] == changed_backend
+        assert summary["rubric_only_comparison"] == (not changed_backend)
+        assert summary["historical_backend_version"] == "ollama:test"
+        assert summary["candidate_backend_version"] == (
+            "ollama:new-test" if changed_backend else "ollama:test"
+        )
+        assert summary["calibrated"] is False and summary["release_threshold_approved"] is False
+        assert summary["generator_called"] is False and summary["retrieval_called"] is False
+        assert summary["complete"] == (damage not in ("second-call", "backend-during-call"))
+        if damage in ("second-call", "backend-during-call"):
+            assert summary["candidate"] is None and len(summary["errors"]) == 20
+        else:
+            assert summary["historical"]["faithfulness"]["exact_agreement"] == 1.0
+            assert summary["candidate"]["faithfulness"]["exact_agreement"] == 0.0
+            assert summary["candidate"]["relevance"]["exact_agreement"] == 1.0
+            assert summary["judge_usage"] == {"input_tokens": 1600, "output_tokens": 400}
+        versions = read_json((output / "version-manifest.json").read_bytes())
+        assert versions["historical_context_inferred"] is False
+        assert versions["backend_changed"] == changed_backend
+        assert versions["rubric_only_comparison"] == (not changed_backend)
+        report_text = (output / "report.md").read_text()
+        if changed_backend:
+            assert "cannot be attributed to the rubric alone" in report_text
+        assert versions["legacy_context_unknown_cases"] == 20
+        rows = [read_json(x) for x in (output / "results.jsonl").read_bytes().splitlines()]
+        assert len(rows) == 20 and all("response" not in row for row in rows)
+        if damage is None or backend_allowed:
+            from evals import rejudge as command
+
+            monkeypatch.setattr(command, "OllamaModel", lambda *args: model)
+            monkeypatch.setattr(
+                "sys.argv",
+                [
+                    "evals.rejudge",
+                    "--baseline",
+                    str(baseline),
+                    "--packet",
+                    str(target),
+                    "--corpora-root",
+                    str(root / "corpora"),
+                    "--output",
+                    str(root / "cli-rescore"),
+                    *(["--allow-backend-change"] if allow_backend_change else []),
+                ],
+            )
+            assert command.main() == 0
+            assert model.client.is_closed
+    finally:
+        model.close()
+        assert protected == {path: Path(path).read_bytes() for path in protected}

@@ -70,6 +70,9 @@ class QueryResponse(BaseModel):
     status: Literal["answered", "insufficient_context"]
     answer: str
     citations: list[Citation]
+    # None means a historical response did not record its actual context.
+    context_sources: list[Citation] | None = Field(default=None, max_length=5)
+    generation_input_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     model: str
     model_revision: str
     model_backend_version: str

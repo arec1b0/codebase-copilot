@@ -25,7 +25,7 @@ from app.contracts import (
     TokenUsage,
 )
 from app.model import ModelBackend, OllamaModel, QueryError
-from app.prompt import PROMPT_SHA256, PROMPT_VERSION, build_prompt
+from app.prompt import PROMPT_SHA256, PROMPT_VERSION, build_prompt, input_sha256
 from indexing.config import ROOT, connect
 from indexing.corpus import IndexingError, load_corpus
 from indexing.embeddings import CpuEmbeddings, EmbeddingBackend
@@ -191,6 +191,7 @@ class GroundedService:
             ) as span:
                 messages, available = build_prompt(request, hits)
                 span.set_attribute("copilot.context.source_count", len(available))
+                span.set_attribute("copilot.context.source_ids", list(available))
                 span.set_attribute(
                     "copilot.context.chunk_ids", [c.chunk_id for c in available.values()]
                 )
@@ -252,6 +253,8 @@ class GroundedService:
                     "status": status,
                     "answer": answer,
                     "citations": citations,
+                    "context_sources": list(available.values()),
+                    "generation_input_sha256": input_sha256(messages) if available else None,
                     "model": self.identity.model,
                     "model_revision": self.identity.revision,
                     "model_backend_version": self.identity.backend_version,

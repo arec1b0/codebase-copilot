@@ -521,3 +521,145 @@ def test_calibrated_judge_gate_is_mechanical_not_a_calibration_claim(
     )
     assert report["status"] == "failed"
     assert [m["metric"] for m in report["metrics"] if m["failed"]] == ["faithfulness"]
+
+
+@pytest.mark.parametrize("damage", [None, "hash", "source", "citation"])
+def test_recorded_context_is_checked_without_using_independent_ranks(
+    inputs: tuple[Path, Path, Path],
+    damage: str | None,
+) -> None:
+    from app.contracts import QueryRequest
+    from app.prompt import PROMPT_SHA256, PROMPT_VERSION, build_prompt, input_sha256
+    from indexing.store import RetrievalHit
+
+    baseline, candidate, corpora = inputs
+    original = load_run(candidate, corpora)
+    rows = read_rows(candidate)
+    path = candidate / "version-manifest.json"
+    versions = json.loads(path.read_bytes())
+    versions.update(prompt_version=PROMPT_VERSION, prompt_sha256=PROMPT_SHA256)
+    write_json(path, versions)
+    for row in rows:
+        saved = original.rows[row["case_id"]]
+        assert saved.retrieved_chunks is not None
+        messages, sources = build_prompt(
+            QueryRequest(question=saved.case.question, language=saved.case.language),
+            saved.retrieved_chunks,
+        )
+        row["response"]["context_sources"] = [s.model_dump() for s in sources.values()]
+        row["response"]["generation_input_sha256"] = input_sha256(messages)
+        row["response"].update(prompt_version=PROMPT_VERSION, prompt_sha256=PROMPT_SHA256)
+    # Change only the independent ranking; recorded API context remains untouched.
+    rows[0]["retrieved_chunks"].insert(0, deepcopy(rows[1]["retrieved_chunks"][0]))
+    case = original.rows[rows[0]["case_id"]].case
+    rows[0]["retrieval"] = retrieval_metrics(
+        case, [RetrievalHit.model_validate(value) for value in rows[0]["retrieved_chunks"]]
+    )
+    if damage == "hash":
+        rows[0]["response"]["generation_input_sha256"] = "f" * 64
+    elif damage == "source":
+        rows[0]["response"]["context_sources"][0]["path"] = "forged.py"
+    elif damage == "citation":
+        rows[0]["response"]["context_sources"][0]["source_id"] = "S2"
+    write_rows(candidate, rows)
+    after = load_run(candidate, corpora)
+    if damage:
+        assert after.issues
+    else:
+        assert not after.issues
+    report = compare_runs(load_run(baseline, corpora), after, policy())
+    assert report["runs"]["baseline"]["recorded_context_cases"] == 0
+    assert report["runs"]["candidate"]["recorded_context_cases"] == 2
+
+
+@pytest.mark.parametrize("damage", [None, "input", "score", "usage", "order", "missing"])
+def test_separated_judge_saved_call_integrity(
+    inputs: tuple[Path, Path, Path],
+    damage: str | None,
+) -> None:
+    from evals.judge import (
+        DIMENSIONS,
+        RUBRIC_HASHES,
+        RUBRIC_SHA256,
+        RUBRIC_VERSION,
+        RUBRICS,
+        json_hash,
+        judge_inputs,
+    )
+
+    _, candidate, corpora = inputs
+    original = load_run(candidate, corpora)
+    rows = read_rows(candidate)
+    chunks = {
+        hit.chunk.chunk_id: hit.chunk
+        for row in original.rows.values()
+        for hit in row.retrieved_chunks or []
+    }
+    versions_path = candidate / "version-manifest.json"
+    versions = json.loads(versions_path.read_bytes())
+    versions["judge"].update(
+        rubric_version=RUBRIC_VERSION,
+        rubric_sha256=RUBRIC_SHA256,
+        dimension_rubrics=RUBRIC_HASHES,
+    )
+    write_json(versions_path, versions)
+    for row in rows:
+        saved = original.rows[row["case_id"]]
+        assert saved.response is not None
+        isolated = judge_inputs(saved.case, saved.response, chunks)
+        row["judge_calls"] = [
+            {
+                "dimension": dim,
+                "rubric_sha256": RUBRIC_HASHES[dim],
+                "input_sha256": json_hash(
+                    [
+                        {"role": "system", "content": RUBRICS[dim]},
+                        {"role": "user", "content": json.dumps(isolated[dim], ensure_ascii=False)},
+                    ]
+                ),
+                "assessment": {"score": row["judge"][dim], "reason": row["judge"][dim + "_reason"]},
+                "usage": {"input_tokens": 10, "output_tokens": 5},
+            }
+            for dim in DIMENSIONS
+        ]
+    if damage == "input":
+        rows[0]["judge_calls"][0]["input_sha256"] = "f" * 64
+    elif damage == "score":
+        rows[0]["judge_calls"][0]["assessment"]["score"] = 0
+    elif damage == "usage":
+        rows[0]["judge_calls"][0]["usage"]["input_tokens"] = 1
+    elif damage == "order":
+        rows[0]["judge_calls"].reverse()
+    elif damage == "missing":
+        del rows[0]["judge_calls"]
+    write_rows(candidate, rows)
+    if damage:
+        with pytest.raises(ValueError):
+            load_run(candidate, corpora)
+    else:
+        assert not load_run(candidate, corpora).issues
+
+
+@pytest.mark.parametrize("damage", ["context", "rubric", "unknown-context"])
+def test_new_run_cannot_silently_downgrade_to_legacy_contracts(
+    inputs: tuple[Path, Path, Path],
+    damage: str,
+) -> None:
+    from evals.judge import RUBRIC_VERSION
+
+    _, candidate, corpora = inputs
+    path = candidate / "version-manifest.json"
+    value = json.loads(path.read_bytes())
+    if damage == "rubric":
+        value["judge"]["rubric_version"] = RUBRIC_VERSION
+    else:
+        value["context_contract"] = (
+            "ordered-source-context-v1" if damage == "context" else "unsupported"
+        )
+    write_json(path, value)
+    if damage == "context":
+        result = load_run(candidate, corpora)
+        assert all("missing_recorded_context" in issues for issues in result.issues.values())
+    else:
+        with pytest.raises(ValueError):
+            load_run(candidate, corpora)

@@ -69,6 +69,13 @@ and deduplicates the public citation list in first-use order. Repeated valid
 markers already present in statement text are removed before rendering; any
 undeclared marker fails. The public `answer` and `citations` contract is unchanged.
 
+Version 0.5.0 adds `context_sources` containing every source actually supplied
+to generation in prompt order, including sources the answer did not cite.
+`generation_input_sha256` hashes canonical system/user messages. An empty list
+and null hash indicate generation was skipped; null context indicates legacy
+unknown provenance. Responses still omit raw source text. See
+[the context validation contract](week2-judge-context.md).
+
 Abstentions must contain no statements and a nonblank explanation without source
 markers. Empty retrieval or no chunks fitting the budget produces an abstention
 without generation and reports zero generation tokens. The previous v1 contract

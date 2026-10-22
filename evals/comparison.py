@@ -9,7 +9,9 @@ from pathlib import Path
 from typing import Any
 
 from evals.comparison_models import RegressionPolicy, RunManifest, SavedRow
+from evals.context import context_issues
 from evals.contracts import EvalCase, retrieval_metrics
+from evals.judge import DIMENSIONS, RUBRIC_HASHES, RUBRIC_VERSION, RUBRICS, json_hash, judge_inputs
 from indexing.corpus import load_corpus
 from ingestion.models import Chunk
 from ingestion.pipeline import fingerprint
@@ -77,6 +79,7 @@ def response_issues(row: SavedRow, chunks: dict[str, Chunk]) -> list[str]:
         issues.append("invalid_response_timing")
     if row.model_ttft_ms != body.model_ttft_ms:
         issues.append("ttft_record_mismatch")
+    issues.extend(context_issues(body, chunks, row.case.question, row.case.language))
     return sorted(set(issues))
 
 
@@ -85,6 +88,16 @@ def load_run(directory: Path, corpora_root: Path) -> SavedRun:
     names = ("version-manifest.json", "dataset.jsonl", "results.jsonl")
     raw = {name: (directory / name).read_bytes() for name in names}
     versions = RunManifest.model_validate(read_json(raw["version-manifest.json"]))
+    rubrics = versions.judge.dimension_rubrics
+    if versions.judge.rubric_version == RUBRIC_VERSION and rubrics is None:
+        raise ValueError("Separated judge manifest is missing its dimension rubrics.")
+    context_contract = (versions.model_extra or {}).get("context_contract")
+    if context_contract not in (None, "ordered-source-context-v1"):
+        raise ValueError("Unsupported recorded context contract.")
+    if rubrics is not None and (
+        set(rubrics) != set(DIMENSIONS) or json_hash(rubrics) != versions.judge.rubric_sha256
+    ):
+        raise ValueError("Judge dimension rubric identity is inconsistent.")
     if versions.judge.same_model_as_generator and (
         versions.judge.model != versions.model or versions.judge.revision != versions.model_revision
     ):
@@ -155,6 +168,12 @@ def load_run(directory: Path, corpora_root: Path) -> SavedRun:
             ):
                 raise ValueError(f"Saved retrieval metrics are inconsistent: {row.case_id}.")
         found = response_issues(row, chunks)
+        if (
+            context_contract is not None
+            and row.response is not None
+            and (row.response.context_sources is None)
+        ):
+            found.append("missing_recorded_context")
         if row.error is not None:
             found.append("execution_error")
         if row.judge is None or row.judge_usage is None:
@@ -162,7 +181,36 @@ def load_run(directory: Path, corpora_root: Path) -> SavedRun:
         if row.client_ms is None:
             found.append("missing_client_timing")
         body = row.response
+        if row.judge_calls is not None and rubrics is None:
+            raise ValueError("Judge call records require declared dimension rubrics.")
         if body is not None:
+            if rubrics is not None and row.error is None:
+                calls = row.judge_calls
+                if calls is None or [c.dimension for c in calls] != list(DIMENSIONS):
+                    raise ValueError("Separated judge requires two ordered call records.")
+                if row.judge is None or row.judge_usage is None:
+                    raise ValueError("Separated judge assessment or usage is missing.")
+                inputs = judge_inputs(row.case, body, chunks)
+                for call in calls:
+                    dim = call.dimension
+                    if call.rubric_sha256 != rubrics[dim] or (
+                        call.assessment.score != getattr(row.judge, dim)
+                        or call.assessment.reason != getattr(row.judge, dim + "_reason")
+                    ):
+                        raise ValueError("Judge call differs from its assessment or rubric.")
+                    if rubrics == RUBRIC_HASHES and call.input_sha256 != json_hash(
+                        [
+                            {"role": "system", "content": RUBRICS[dim]},
+                            {
+                                "role": "user",
+                                "content": json.dumps(inputs[dim], ensure_ascii=False),
+                            },
+                        ]
+                    ):
+                        raise ValueError("Judge input hash differs from the isolated input.")
+                for key in ("input_tokens", "output_tokens"):
+                    if sum(getattr(c.usage, key) for c in calls) != getattr(row.judge_usage, key):
+                        raise ValueError("Judge total usage differs from its two calls.")
             identity = {
                 "model": versions.model,
                 "model_revision": versions.model_revision,
@@ -299,6 +347,10 @@ def compare_runs(
             "file_sha256": run.file_hashes,
             "versions": run.versions.model_dump(mode="json"),
             "observations": timings(run),
+            "recorded_context_cases": sum(
+                row.response is not None and row.response.context_sources is not None
+                for row in run.rows.values()
+            ),
             "technical_issues": run.issues,
         }
     passed = not baseline.issues and not candidate.issues and not any(m["failed"] for m in metrics)
@@ -313,7 +365,7 @@ def compare_runs(
         "metrics": metrics,
         "regressions": regressions,
         "limitations": [
-            "Saved independent retrieval is measured; actual ordered API context is not recorded.",
+            "Independent retrieval and API context are distinct; legacy context stays unknown.",
             "Citation metadata validity does not establish semantic claim support.",
             "Judge scores are report-only by default and are not accuracy percentages.",
             "Artifact hashes provide integrity, not independent authenticity or attestation.",

@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from app.contracts import QueryResponse, TokenUsage
 from evals.contracts import EvalCase, JudgeAssessment
+from evals.judge import JudgeCall
 from indexing.store import IndexManifest, RetrievalHit
 
 Digest = Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
@@ -21,6 +22,7 @@ class JudgeIdentity(BaseModel):
     rubric_sha256: Digest
     calibrated: bool
     same_model_as_generator: bool
+    dimension_rubrics: dict[str, Digest] | None = None
 
 
 class RunManifest(BaseModel):
@@ -63,6 +65,7 @@ class SavedRow(BaseModel):
     model_ttft_ms: Nonnegative | None = None
     judge: JudgeAssessment | None = None
     judge_usage: TokenUsage | None = None
+    judge_calls: list[JudgeCall] | None = None
     error: SavedError | None = None
 
 

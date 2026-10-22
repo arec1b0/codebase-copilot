@@ -14,7 +14,7 @@ def test_liveness_contract() -> None:
     assert response.json() == {
         "status": "ok",
         "service": "codebase-copilot",
-        "version": "0.4.1",
+        "version": "0.5.0",
     }
 
 

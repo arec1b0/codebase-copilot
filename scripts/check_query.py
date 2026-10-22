@@ -59,6 +59,10 @@ def main() -> None:
         require_success(result)
         body = QueryResponse.model_validate_json(result.content)
         assert body.status == "answered"
+        assert body.context_sources is not None and body.context_sources
+        assert body.generation_input_sha256 is not None
+        available = {c.source_id: c for c in body.context_sources}
+        assert all(c == available.get(c.source_id) for c in body.citations)
         assert body.prompt_version == PROMPT_VERSION, "The API is running an older prompt."
         assert set(re.findall(r"\[(S\d+)\]", body.answer)) == {
             citation.source_id for citation in body.citations
@@ -83,6 +87,7 @@ def main() -> None:
         abstention = QueryResponse.model_validate_json(empty.content)
         assert abstention.status == "insufficient_context"
         assert not abstention.citations and abstention.usage.output_tokens == 0
+        assert abstention.context_sources == [] and abstention.generation_input_sha256 is None
         invalid = client.post("/query", json={"question": " "})
         assert invalid.status_code == 422
         assert invalid.json()["request_id"] == invalid.headers["X-Request-ID"]

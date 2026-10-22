@@ -30,6 +30,12 @@ PROMPT_SHA256 = hashlib.sha256(
 ).hexdigest()
 
 
+def input_sha256(messages: list[dict[str, str]]) -> str:
+    """Hash the exact system/user messages, excluding transport and model options."""
+    raw = json.dumps(messages, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
 def build_prompt(
     request: QueryRequest, hits: list[RetrievalHit]
 ) -> tuple[list[dict[str, str]], dict[str, Citation]]:
